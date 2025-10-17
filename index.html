@@ -1,270 +1,482 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Colorful Resume Builder</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ChromaResume — Modern Centered Resume Builder</title>
+
 <style>
-/* ===== RESET & BASE ===== */
-*{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif;}
-body{background:#0f172a;color:#fff;display:flex;flex-direction:column;align-items:center;min-height:100vh;}
-h2{margin:10px 0;font-size:1rem;color:#0ef;}
-.container{display:flex;flex-wrap:wrap;justify-content:center;width:100%;max-width:1200px;padding:20px;gap:20px;}
-form, .preview{background:#1e293b;border-radius:10px;padding:20px;flex:1;min-width:320px;}
-button, select, input, textarea{border:none;border-radius:6px;outline:none;padding:10px;margin-top:6px;width:100%;font-size:0.9rem;}
-button{cursor:pointer;background:#0ef;color:#000;font-weight:bold;transition:0.2s;}
-button:hover{background:#09c;}
-textarea{resize:vertical;min-height:70px;}
-.section{margin-bottom:20px;}
-label{font-weight:bold;color:#0ef;font-size:0.9rem;}
-input[type="color"]{padding:0;height:40px;width:60px;cursor:pointer;}
-.add-btn{background:#22c55e;color:#fff;margin-top:10px;}
-.add-btn:hover{background:#16a34a;}
-.del-btn{background:#ef4444;color:#fff;font-size:0.8rem;padding:5px 8px;margin-top:4px;}
-.resume-header{color:var(--accent,#0ef);}
-.resume{background:#fff;color:#000;border-radius:10px;padding:30px;max-width:800px;margin:auto;line-height:1.4;}
-.resume h1{font-size:1.6rem;color:var(--accent,#0ef);}
-.resume h3{color:var(--accent,#0ef);margin-top:12px;}
-.resume h4{color:#111;margin-top:10px;}
-.resume p, .resume li{font-size:0.9rem;}
-.resume ul{margin-left:20px;}
-.resume .skills span{background:var(--accent,#0ef);color:#fff;border-radius:15px;padding:4px 10px;font-size:0.8rem;margin:3px;display:inline-block;}
-.top-actions{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;}
-@media print{
-    body{background:#fff;color:#000;}
-    .container,.form-section,.top-actions{display:none;}
-    .resume{color:#000;}
+:root{
+  --bg:#0b1020;
+  --panel:#0f1724;
+  --muted:#9fb3c8;
+  --card:#ffffff;
+  --accent1:#5eead4;
+  --accent2:#7c3aed;
+  --accent-grad: linear-gradient(135deg,var(--accent1),var(--accent2));
+  --max-width:900px;
+  --resume-width:794px;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);-webkit-font-smoothing:antialiased}
+.container{max-width:var(--max-width);margin:28px auto;padding:20px;display:flex;flex-direction:column;gap:20px;align-items:center}
+.header{width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{font-weight:800;color:white;letter-spacing:0.2px}
+.controls{display:flex;gap:8px;align-items:center}
+.btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;color:var(--muted);cursor:pointer}
+.btn.primary{background:var(--accent-grad);color:#041014;border:0;box-shadow:0 6px 20px rgba(124,58,237,0.14)}
+.layout{width:100%;display:flex;flex-direction:column;gap:18px;align-items:center}
+
+/* Form */
+.form{
+  width:100%;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.03));
+  border-radius:14px;padding:18px;border:1px solid rgba(255,255,255,0.03);
+  display:grid;grid-template-columns:repeat(2,1fr);gap:12px;
+}
+.form .full{grid-column:1/-1}
+label{display:block;font-size:13px;color:var(--accent1);margin-bottom:6px;font-weight:600}
+input, textarea, select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:white;font-size:14px}
+textarea{min-height:84px;resize:vertical}
+.form-foot{width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.small{font-size:12px;color:var(--muted)}
+
+/* Preview area */
+.preview-wrap{width:100%;display:flex;justify-content:center}
+.preview-card{width:calc(var(--resume-width));background:var(--card);border-radius:10px;padding:28px;box-shadow:0 10px 30px rgba(2,6,23,0.5);color:#042b2b}
+.preview-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.preview-name{font-size:28px;font-weight:800;color:transparent;background-clip:text;-webkit-background-clip:text;background-image:var(--accent-grad)}
+.preview-title{font-size:14px;color:#0b2a2a;margin-top:6px}
+.preview-meta{font-size:13px;color:#245e57;margin-top:6px}
+.section{margin-top:18px}
+.section h4{margin:0 0 8px 0;color:var(--accent2);font-size:13px}
+.item strong{color:#082b2b}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:linear-gradient(180deg,var(--accent1),var(--accent2));color:#041014;padding:6px 10px;border-radius:999px;font-weight:700;font-size:12px}
+
+/* Responsive */
+@media (max-width:980px){
+  .form{grid-template-columns:1fr}
+  .preview-card{width:100%}
+  :root{--resume-width:680px}
+}
+@media (max-width:560px){
+  .container{padding:12px}
+  .brand{font-size:16px}
 }
 </style>
 </head>
 <body>
-<div class="top-actions">
-  <h2>🎨 Colorful Resume Builder</h2>
-  <div>
-    <label>Accent Color: <input type="color" id="accentColor" value="#00ffff"></label>
-    <button onclick="window.print()">🖨 Print / Save PDF</button>
-  </div>
-</div>
-
 <div class="container">
-  <form id="resumeForm">
-    <div class="section">
-      <h2>Personal Details</h2>
-      <label>Name</label><input id="name" required>
-      <label>Title</label><input id="title">
-      <label>Email</label><input id="email" type="email">
-      <label>Phone</label><input id="phone">
-      <label>LinkedIn</label><input id="linkedin">
-      <label>Portfolio</label><input id="portfolio">
-      <label>Summary</label><textarea id="summary"></textarea>
+  <div class="header">
+    <div class="brand">Chroma<span style="background:var(--accent-grad);-webkit-background-clip:text;color:transparent">Resume</span></div>
+    <div class="controls">
+      <button id="saveBtn" class="btn">Save</button>
+      <button id="downloadPdf" class="btn primary">Download PDF</button>
+      <button id="clearBtn" class="btn">Clear</button>
     </div>
+  </div>
 
-    <div class="section" id="experienceSection">
-      <h2>Experience</h2>
-      <div class="exp">
-        <label>Job Title</label><input class="jobTitle">
-        <label>Company</label><input class="company">
-        <label>Year</label><input class="year">
-        <label>Description</label><textarea class="expDesc"></textarea>
-        <button type="button" class="del-btn" onclick="this.parentElement.remove();saveData()">Remove</button>
+  <div class="layout">
+    <form id="resumeForm" class="form" onsubmit="return false">
+      <div class="full">
+        <label>Full name</label>
+        <input id="inputName" placeholder="Sangam" />
       </div>
-      <button type="button" class="add-btn" onclick="addExp()">+ Add Experience</button>
-    </div>
-
-    <div class="section" id="projectSection">
-      <h2>Projects</h2>
-      <div class="proj">
-        <label>Project Name</label><input class="projName">
-        <label>Link</label><input class="projLink">
-        <label>Description</label><textarea class="projDesc"></textarea>
-        <button type="button" class="del-btn" onclick="this.parentElement.remove();saveData()">Remove</button>
+      <div>
+        <label>Title / Role</label>
+        <input id="inputTitle" placeholder="Frontend Developer" />
       </div>
-      <button type="button" class="add-btn" onclick="addProj()">+ Add Project</button>
-    </div>
-
-    <div class="section" id="educationSection">
-      <h2>Education</h2>
-      <div class="edu">
-        <label>Degree / Certificate</label><input class="degree">
-        <label>Institution</label><input class="inst">
-        <label>Year</label><input class="eduYear">
-        <button type="button" class="del-btn" onclick="this.parentElement.remove();saveData()">Remove</button>
+      <div>
+        <label>Email</label>
+        <input id="inputEmail" placeholder="you@example.com" type="email" />
       </div>
-      <button type="button" class="add-btn" onclick="addEdu()">+ Add Education</button>
-    </div>
+      <div>
+        <label>Phone</label>
+        <input id="inputPhone" placeholder="+91 9xx-xxx-xxxx" />
+      </div>
+      <div>
+        <label>Location</label>
+        <input id="inputLocation" placeholder="City, Country" />
+      </div>
+      <div>
+        <label>Website / LinkedIn</label>
+        <input id="inputWebsite" placeholder="https://..." />
+      </div>
+      <div class="full">
+        <label>Professional summary</label>
+        <textarea id="inputSummary" placeholder="Brief summary..."></textarea>
+      </div>
 
-    <div class="section">
-      <h2>Skills</h2>
-      <label>Comma separated</label>
-      <input id="skills">
-    </div>
+      <!-- Experience block -->
+      <div class="full">
+        <label>Experience (add multiple)</label>
+        <div id="expContainer"></div>
+        <div style="margin-top:8px;display:flex;gap:8px">
+          <button id="addExpBtn" class="btn" type="button">+ Add experience</button>
+        </div>
+      </div>
 
-    <button type="button" onclick="saveData()">💾 Save</button>
-    <button type="button" onclick="resetForm()">Reset</button>
-  </form>
+      <!-- Projects -->
+      <div class="full">
+        <label>Projects (add multiple)</label>
+        <div id="projContainer"></div>
+        <div style="margin-top:8px;display:flex;gap:8px">
+          <button id="addProjBtn" class="btn" type="button">+ Add project</button>
+        </div>
+      </div>
 
-  <div class="preview">
-    <div class="resume" id="resumePreview">
-      <h1 id="pName">Your Name</h1>
-      <h3 id="pTitle">Your Professional Title</h3>
-      <p><span id="pEmail">email@example.com</span> | 
-         <span id="pPhone">123-456-7890</span> | 
-         <span id="pLinkedin">linkedin.com/in/username</span> | 
-         <span id="pPortfolio">portfolio.com</span></p>
-      <h3>SUMMARY</h3><p id="pSummary">Brief summary here...</p>
-      <h3>EXPERIENCE</h3><div id="pExperience"></div>
-      <h3>PROJECTS</h3><div id="pProjects"></div>
-      <h3>EDUCATION</h3><div id="pEducation"></div>
-      <h3>SKILLS</h3><div class="skills" id="pSkills"></div>
+      <!-- Skills -->
+      <div class="full">
+        <label>Skills (comma separated)</label>
+        <input id="inputSkills" placeholder="React, Node.js, SQL" />
+      </div>
+
+      <!-- Color options -->
+      <div class="full">
+        <label>Accent Gradient Start</label>
+        <input type="color" id="colorAccent1" value="#5eead4" />
+      </div>
+      <div class="full">
+        <label>Accent Gradient End</label>
+        <input type="color" id="colorAccent2" value="#7c3aed" />
+      </div>
+      <div class="full">
+        <label>Text Color</label>
+        <input type="color" id="colorText" value="#042b2b" />
+      </div>
+      <div class="full">
+        <label>Background Color</label>
+        <input type="color" id="colorBackground" value="#ffffff" />
+      </div>
+
+      <div class="form-foot full">
+        <div class="small">All data stays in your browser (LocalStorage)</div>
+        <div style="display:flex;gap:8px">
+          <button id="previewBtn" class="btn" type="button">Refresh Preview</button>
+        </div>
+      </div>
+    </form>
+
+    <div class="preview-wrap">
+      <div id="preview" class="preview-card" role="region" aria-label="Resume preview">
+        <div class="preview-header">
+          <div>
+            <div class="preview-name" id="pvName">Name - Sangam</div>
+            <div class="preview-title" id="pvTitle">Frontend Developer</div>
+            <div class="preview-meta" id="pvMeta">you@example.com • +91 9xx-xxx-xxxx • yoursite</div>
+          </div>
+        </div>
+        <div class="section">
+          <h4>Professional Summary</h4>
+          <div id="pvSummary" class="item">A short professional summary goes here.</div>
+        </div>
+        <div class="section">
+          <h4>Experience</h4>
+          <div id="pvExperience"></div>
+        </div>
+        <div class="section">
+          <h4>Projects</h4>
+          <div id="pvProjects"></div>
+        </div>
+        <div class="section">
+          <h4>Skills</h4>
+          <div id="pvSkills" class="chips"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-function qs(sel, par=document){return par.querySelector(sel)}
-function qsa(sel, par=document){return [...par.querySelectorAll(sel)]}
+const { jsPDF } = window.jspdf;
 
-const fields = ["name","title","email","phone","linkedin","portfolio","summary","skills"];
+function $(id){ return document.getElementById(id); }
+function createEl(tag, props = {}, children = []) {
+  const el = document.createElement(tag);
+  Object.entries(props).forEach(([k,v]) => el.setAttribute(k, v));
+  children.forEach(c => el.appendChild(c));
+  return el;
+}
+function escapeHtml(s=''){ return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
-function updatePreview(){
-  const accent = qs("#accentColor").value;
-  document.querySelector(":root").style.setProperty("--accent",accent);
-  qs("#pName").textContent = qs("#name").value || "Your Name";
-  qs("#pTitle").textContent = qs("#title").value || "Your Professional Title";
-  qs("#pEmail").textContent = qs("#email").value;
-  qs("#pPhone").textContent = qs("#phone").value;
-  qs("#pLinkedin").textContent = qs("#linkedin").value;
-  qs("#pPortfolio").textContent = qs("#portfolio").value;
-  qs("#pSummary").textContent = qs("#summary").value;
+const inputName = $('inputName');
+const inputTitle = $('inputTitle');
+const inputEmail = $('inputEmail');
+const inputPhone = $('inputPhone');
+const inputLocation = $('inputLocation');
+const inputWebsite = $('inputWebsite');
+const inputSummary = $('inputSummary');
+const inputSkills = $('inputSkills');
+const expContainer = $('expContainer');
+const projContainer = $('projContainer');
+const pvName = $('pvName');
+const pvTitle = $('pvTitle');
+const pvMeta = $('pvMeta');
+const pvSummary = $('pvSummary');
+const pvExperience = $('pvExperience');
+const pvProjects = $('pvProjects');
+const pvSkills = $('pvSkills');
+const addExpBtn = $('addExpBtn');
+const addProjBtn = $('addProjBtn');
+const previewBtn = $('previewBtn');
+const saveBtn = $('saveBtn');
+const clearBtn = $('clearBtn');
+const downloadPdf = $('downloadPdf');
+const colorAccent1 = $('colorAccent1');
+const colorAccent2 = $('colorAccent2');
+const colorText = $('colorText');
+const colorBackground = $('colorBackground');
 
-  // Experience
-  let expHTML="";
-  qsa("#experienceSection .exp").forEach(e=>{
-    const j=e.querySelector(".jobTitle").value;
-    const c=e.querySelector(".company").value;
-    const y=e.querySelector(".year").value;
-    const d=e.querySelector(".expDesc").value;
-    expHTML+=`<div><h4>${j||""} - ${c||""}</h4><p><em>${y||""}</em></p><p>${d||""}</p></div>`;
+const LS_KEY = 'chroma_resume_modern_v2';
+let state = { personal:{}, experiences:[], projects:[], skills:[], colors:{} };
+
+function makeExpBlock(data={}) {
+  const wrapper = createEl('div',{class:'exp-block'});
+  wrapper.style.marginBottom='8px';
+  wrapper.innerHTML = `
+    <div style="display:flex;gap:8px">
+      <input class="exp-role" placeholder="Role" style="flex:1" />
+      <input class="exp-company" placeholder="Company" style="flex:1" />
+    </div>
+    <div style="display:flex;gap:8px;margin-top:6px">
+      <input class="exp-dates" placeholder="Dates" style="flex:1" />
+      <input class="exp-loc" placeholder="Location" style="flex:1" />
+    </div>
+    <textarea class="exp-desc" placeholder="Description" style="margin-top:6px"></textarea>
+    <div style="margin-top:6px"><button type="button" class="btn" style="background:#fde68a;color:#041014;border-radius:8px;padding:6px 10px">Remove</button></div>
+  `;
+  wrapper.querySelector('.exp-role').value=data.role||'';
+  wrapper.querySelector('.exp-company').value=data.company||'';
+  wrapper.querySelector('.exp-dates').value=data.dates||'';
+  wrapper.querySelector('.exp-loc').value=data.location||'';
+  wrapper.querySelector('.exp-desc').value=data.description||'';
+  wrapper.querySelector('button').addEventListener('click',()=>{ wrapper.remove(); renderPreview(); saveState(); });
+  wrapper.querySelectorAll('input,textarea').forEach(el=>el.addEventListener('input',()=>{ renderPreview(); autosaveDebounced(); }));
+  return wrapper;
+}
+
+function makeProjBlock(data={}) {
+  const wrapper = createEl('div',{class:'proj-block'});
+  wrapper.style.marginBottom='8px';
+  wrapper.innerHTML = `
+    <input class="proj-name" placeholder="Project name" style="width:100%;margin-bottom:6px" />
+    <input class="proj-link" placeholder="Link (optional)" style="width:100%;margin-bottom:6px" />
+    <textarea class="proj-desc" placeholder="Description" style="width:100%"></textarea>
+    <div style="margin-top:6px"><button type="button" class="btn" style="background:#fecaca;color:#041014;border-radius:8px;padding:6px 10px">Remove</button></div>
+  `;
+  wrapper.querySelector('.proj-name').value=data.name||'';
+  wrapper.querySelector('.proj-link').value=data.link||'';
+  wrapper.querySelector('.proj-desc').value=data.description||'';
+  wrapper.querySelector('button').addEventListener('click',()=>{ wrapper.remove(); renderPreview(); saveState(); });
+  wrapper.querySelectorAll('input,textarea').forEach(el=>el.addEventListener('input',()=>{ renderPreview(); autosaveDebounced(); }));
+  return wrapper;
+}
+
+addExpBtn.addEventListener('click',()=>{ expContainer.appendChild(makeExpBlock()); autosaveDebounced(); });
+addProjBtn.addEventListener('click',()=>{ projContainer.appendChild(makeProjBlock()); autosaveDebounced(); });
+
+function renderPreview(){
+  const name=inputName.value.trim()||'Sangam';
+  const title=inputTitle.value.trim()||'Professional Title';
+  const email=inputEmail.value.trim();
+  const phone=inputPhone.value.trim();
+  const location=inputLocation.value.trim();
+  const website=inputWebsite.value.trim();
+  const summary=inputSummary.value.trim()||'A brief professional summary...';
+  const skillsArr = inputSkills.value.split(',').map(s=>s.trim()).filter(Boolean);
+
+  // Colors
+  const accent1=colorAccent1.value, accent2=colorAccent2.value, text=colorText.value, bg=colorBackground.value;
+
+  pvName.style.backgroundImage=`linear-gradient(135deg, ${accent1}, ${accent2})`;
+  pvTitle.style.color=text;
+  pvSummary.style.color=text;
+  pvExperience.querySelectorAll('.item').forEach(i=>i.style.color=text);
+  pvProjects.querySelectorAll('.item').forEach(i=>i.style.color=text);
+  pvSkills.querySelectorAll('.chip').forEach(c=>{ c.style.background=`linear-gradient(180deg, ${accent1}, ${accent2})`; c.style.color=text; });
+  document.querySelector('.preview-card').style.backgroundColor=bg;
+
+  pvName.textContent='Name - '+name;
+  pvTitle.textContent=title;
+  pvMeta.textContent=[email,phone,location,website].filter(Boolean).join(' • ');
+  pvSummary.textContent=summary;
+
+  // Experiences
+  pvExperience.innerHTML='';
+  const expBlocks=expContainer.querySelectorAll('.exp-block');
+  if(expBlocks.length===0) pvExperience.innerHTML='<div class="item small">No experience added.</div>';
+  expBlocks.forEach(b=>{
+    const r=b.querySelector('.exp-role').value;
+    const c=b.querySelector('.exp-company').value;
+    const d=b.querySelector('.exp-dates').value;
+    const l=b.querySelector('.exp-loc').value;
+    const desc=b.querySelector('.exp-desc').value;
+    const item=createEl('div',{class:'item'});
+    item.style.marginBottom='10px';
+    item.innerHTML=`<div><strong>${escapeHtml(r||'')}${(r&&c)?' — ':''}${escapeHtml(c||'')}</strong></div>
+                    <div style="color:#0a7c6f;font-size:12px">${escapeHtml(d||'')}${(d&&l)?' • ':''}${escapeHtml(l||'')}</div>
+                    <div style="margin-top:6px">${escapeHtml(desc||'')}</div>`;
+    pvExperience.appendChild(item);
   });
-  qs("#pExperience").innerHTML=expHTML||"<p>No experience added.</p>";
 
   // Projects
-  let projHTML="";
-  qsa("#projectSection .proj").forEach(p=>{
-    const n=p.querySelector(".projName").value;
-    const l=p.querySelector(".projLink").value;
-    const d=p.querySelector(".projDesc").value;
-    projHTML+=`<div><h4>${n||""}</h4><p>${d||""}</p><a href="${l||"#"}" target="_blank">${l||""}</a></div>`;
+  pvProjects.innerHTML='';
+  const projBlocks=projContainer.querySelectorAll('.proj-block');
+  if(projBlocks.length===0) pvProjects.innerHTML='<div class="item small">No projects added.</div>';
+  projBlocks.forEach(b=>{
+    const n=b.querySelector('.proj-name').value;
+    const link=b.querySelector('.proj-link').value;
+    const d=b.querySelector('.proj-desc').value;
+    const item=createEl('div',{class:'item'});
+    item.style.marginBottom='10px';
+    item.innerHTML=`<div><strong>${escapeHtml(n||'')}</strong></div>
+                    ${link?`<div style="color:#0a7c6f;font-size:12px"><a href="${escapeHtml(link)}" target="_blank">${escapeHtml(link)}</a></div>`:''}
+                    <div style="margin-top:6px">${escapeHtml(d||'')}</div>`;
+    pvProjects.appendChild(item);
   });
-  qs("#pProjects").innerHTML=projHTML||"<p>No projects added.</p>";
-
-  // Education
-  let eduHTML="";
-  qsa("#educationSection .edu").forEach(ed=>{
-    const de=ed.querySelector(".degree").value;
-    const i=ed.querySelector(".inst").value;
-    const y=ed.querySelector(".eduYear").value;
-    eduHTML+=`<p><strong>${de||""}</strong> - ${i||""} (${y||""})</p>`;
-  });
-  qs("#pEducation").innerHTML=eduHTML||"<p>No education added.</p>";
 
   // Skills
-  let s = qs("#skills").value.split(",").map(x=>x.trim()).filter(Boolean);
-  qs("#pSkills").innerHTML = s.map(sk=>`<span>${sk}</span>`).join("");
+  pvSkills.innerHTML=skillsArr.map(s=>`<span class="chip">${escapeHtml(s)}</span>`).join(' ');
 }
 
-function addExp(){
-  const div=document.createElement("div");
-  div.className="exp";
-  div.innerHTML=`<label>Job Title</label><input class="jobTitle">
-  <label>Company</label><input class="company">
-  <label>Year</label><input class="year">
-  <label>Description</label><textarea class="expDesc"></textarea>
-  <button type="button" class="del-btn" onclick="this.parentElement.remove();saveData()">Remove</button>`;
-  qs("#experienceSection").insertBefore(div,qs("#experienceSection .add-btn"));
-  attachListeners();
-}
-function addProj(){
-  const div=document.createElement("div");
-  div.className="proj";
-  div.innerHTML=`<label>Project Name</label><input class="projName">
-  <label>Link</label><input class="projLink">
-  <label>Description</label><textarea class="projDesc"></textarea>
-  <button type="button" class="del-btn" onclick="this.parentElement.remove();saveData()">Remove</button>`;
-  qs("#projectSection").insertBefore(div,qs("#projectSection .add-btn"));
-  attachListeners();
-}
-function addEdu(){
-  const div=document.createElement("div");
-  div.className="edu";
-  div.innerHTML=`<label>Degree / Certificate</label><input class="degree">
-  <label>Institution</label><input class="inst">
-  <label>Year</label><input class="eduYear">
-  <button type="button" class="del-btn" onclick="this.parentElement.remove();saveData()">Remove</button>`;
-  qs("#educationSection").insertBefore(div,qs("#educationSection .add-btn"));
-  attachListeners();
-}
-
-function attachListeners(){
-  document.querySelectorAll("input,textarea,select").forEach(i=>{
-    i.oninput=()=>{updatePreview();saveData();}
-  });
-  qs("#accentColor").oninput=updatePreview;
+function saveState(){
+  const data={
+    personal:{
+      name: inputName.value,
+      title: inputTitle.value,
+      email: inputEmail.value,
+      phone: inputPhone.value,
+      location: inputLocation.value,
+      website: inputWebsite.value,
+      summary: inputSummary.value
+    },
+    experiences:Array.from(expContainer.querySelectorAll('.exp-block')).map(b=>({
+      role: b.querySelector('.exp-role').value,
+      company: b.querySelector('.exp-company').value,
+      dates: b.querySelector('.exp-dates').value,
+      location: b.querySelector('.exp-loc').value,
+      description: b.querySelector('.exp-desc').value
+    })),
+    projects:Array.from(projContainer.querySelectorAll('.proj-block')).map(b=>({
+      name: b.querySelector('.proj-name').value,
+      link: b.querySelector('.proj-link').value,
+      description: b.querySelector('.proj-desc').value
+    })),
+    skills: inputSkills.value,
+    colors:{
+      accent1: colorAccent1.value,
+      accent2: colorAccent2.value,
+      text: colorText.value,
+      background: colorBackground.value
+    }
+  };
+  localStorage.setItem(LS_KEY, JSON.stringify(data));
+  saveBtn.textContent='Saved ✓';
+  setTimeout(()=>saveBtn.textContent='Save',900);
 }
 
-function saveData(){
-  const data={};
-  fields.forEach(f=>data[f]=qs("#"+f).value);
-  data.experience=qsa("#experienceSection .exp").map(e=>({
-    job:e.querySelector(".jobTitle").value,
-    company:e.querySelector(".company").value,
-    year:e.querySelector(".year").value,
-    desc:e.querySelector(".expDesc").value
-  }));
-  data.projects=qsa("#projectSection .proj").map(p=>({
-    name:p.querySelector(".projName").value,
-    link:p.querySelector(".projLink").value,
-    desc:p.querySelector(".projDesc").value
-  }));
-  data.education=qsa("#educationSection .edu").map(ed=>({
-    degree:ed.querySelector(".degree").value,
-    inst:ed.querySelector(".inst").value,
-    year:ed.querySelector(".eduYear").value
-  }));
-  localStorage.setItem("resumeData",JSON.stringify(data));
-}
-function loadData(){
-  const s=localStorage.getItem("resumeData");
-  if(!s) return;
-  const d=JSON.parse(s);
-  fields.forEach(f=>{if(d[f])qs("#"+f).value=d[f];});
-  // rebuild lists
-  qs("#experienceSection").querySelectorAll(".exp").forEach((e,i)=>i>0&&e.remove());
-  qs("#projectSection").querySelectorAll(".proj").forEach((e,i)=>i>0&&e.remove());
-  qs("#educationSection").querySelectorAll(".edu").forEach((e,i)=>i>0&&e.remove());
-  d.experience?.forEach((e,i)=>{if(i>0)addExp();
-    const el=qsa("#experienceSection .exp")[i];
-    el.querySelector(".jobTitle").value=e.job;el.querySelector(".company").value=e.company;
-    el.querySelector(".year").value=e.year;el.querySelector(".expDesc").value=e.desc;
-  });
-  d.projects?.forEach((p,i)=>{if(i>0)addProj();
-    const el=qsa("#projectSection .proj")[i];
-    el.querySelector(".projName").value=p.name;el.querySelector(".projLink").value=p.link;el.querySelector(".projDesc").value=p.desc;
-  });
-  d.education?.forEach((ed,i)=>{if(i>0)addEdu();
-    const el=qsa("#educationSection .edu")[i];
-    el.querySelector(".degree").value=ed.degree;el.querySelector(".inst").value=ed.inst;el.querySelector(".eduYear").value=ed.year;
-  });
+function loadState(){
+  const raw=localStorage.getItem(LS_KEY);
+  if(!raw) return;
+  try{
+    const data=JSON.parse(raw);
+    inputName.value=data.personal?.name||'';
+    inputTitle.value=data.personal?.title||'';
+    inputEmail.value=data.personal?.email||'';
+    inputPhone.value=data.personal?.phone||'';
+    inputLocation.value=data.personal?.location||'';
+    inputWebsite.value=data.personal?.website||'';
+    inputSummary.value=data.personal?.summary||'';
+    inputSkills.value=data.skills||'';
+    if(data.colors){
+      colorAccent1.value=data.colors.accent1||'#5eead4';
+      colorAccent2.value=data.colors.accent2||'#7c3aed';
+      colorText.value=data.colors.text||'#042b2b';
+      colorBackground.value=data.colors.background||'#ffffff';
+    }
+    expContainer.innerHTML='';
+    (data.experiences||[]).forEach(e=>expContainer.appendChild(makeExpBlock({
+      role:e.role, company:e.company, dates:e.dates, location:e.location, description:e.description
+    })));
+    projContainer.innerHTML='';
+    (data.projects||[]).forEach(p=>projContainer.appendChild(makeProjBlock({
+      name:p.name, link:p.link, description:p.description
+    })));
+  }catch(err){console.warn('Failed to load state',err);}
 }
 
-function resetForm(){
-  localStorage.removeItem("resumeData");
-  location.reload();
+let saveTimer=null;
+function autosaveDebounced(){ clearTimeout(saveTimer); saveTimer=setTimeout(()=>{ saveState(); },800); }
+
+clearBtn.addEventListener('click',()=>{
+  if(!confirm('Clear all data from the form and LocalStorage?')) return;
+  localStorage.removeItem(LS_KEY);
+  inputName.value=inputTitle.value=inputEmail.value=inputPhone.value=inputLocation.value=inputWebsite.value=inputSummary.value=inputSkills.value='';
+  expContainer.innerHTML='';
+  projContainer.innerHTML='';
+  renderPreview();
+});
+
+previewBtn.addEventListener('click',()=>renderPreview());
+saveBtn.addEventListener('click',()=>saveState());
+downloadPdf.addEventListener('click',async ()=>{
+  renderPreview();
+  await exportPdf();
+});
+
+async function exportPdf(){
+  const btn=downloadPdf;
+  btn.disabled=true;
+  const originalText=btn.textContent;
+  btn.textContent='Rendering PDF...';
+  try{
+    const scale=2;
+    const previewEl=document.querySelector('.preview-card');
+    const canvas=await html2canvas(previewEl,{scale:scale,useCORS:true,allowTaint:false,backgroundColor:'#ffffff'});
+    const imgData=canvas.toDataURL('image/png',1.0);
+    const pdf=new jsPDF('p','mm','a4');
+    const pageWidth=pdf.internal.pageSize.getWidth();
+    const pageHeight=pdf.internal.pageSize.getHeight();
+    const imgW=canvas.width;
+    const imgH=canvas.height;
+    const mmPerPx=pageWidth/imgW;
+    const imgHeightMm=imgH*mmPerPx;
+    if(imgHeightMm<=pageHeight){
+      pdf.addImage(imgData,'PNG',0,0,pageWidth,imgHeightMm);
+    } else {
+      const pageHeightPx=Math.floor(pageHeight/mmPerPx);
+      let y=0;
+      while(y<imgH){
+        const sliceHeight=Math.min(pageHeightPx,imgH-y);
+        const tmpCanvas=document.createElement('canvas');
+        tmpCanvas.width=imgW; tmpCanvas.height=sliceHeight;
+        const ctx=tmpCanvas.getContext('2d');
+        ctx.drawImage(canvas,0,y,imgW,sliceHeight,0,0,imgW,sliceHeight);
+        const sliceData=tmpCanvas.toDataURL('image/png',1.0);
+        const sliceHeightMm=sliceHeight*mmPerPx;
+        pdf.addImage(sliceData,'PNG',0,0,pageWidth,sliceHeightMm);
+        y+=sliceHeight;
+        if(y<imgH) pdf.addPage();
+      }
+    }
+    const nameForFile=(inputName.value.trim()||'resume').replace(/\s+/g,'_').toLowerCase();
+    pdf.save(`${nameForFile}.pdf`);
+  }catch(err){console.error(err); alert('PDF export failed: '+(err?.message||err));}
+  finally{ btn.disabled=false; btn.textContent=originalText; }
 }
 
-attachListeners();
-loadData();
-updatePreview();
+(function init(){
+  if(expContainer.children.length===0) expContainer.appendChild(makeExpBlock({ role:'Frontend Developer', company:'Example Co', dates:'2022 - Present', location:'City', description:'Worked on UI & components' }));
+  if(projContainer.children.length===0) projContainer.appendChild(makeProjBlock({ name:'Portfolio Site', link:'https://example.com', description:'A personal portfolio website.' }));
+  loadState();
+  renderPreview();
+  document.querySelectorAll('input,textarea').forEach(el=>el.addEventListener('input',autosaveDebounced));
+  [colorAccent1,colorAccent2,colorText,colorBackground].forEach(el=>el.addEventListener('input',()=>{ renderPreview(); autosaveDebounced(); }));
+})();
 </script>
 </body>
 </html>
