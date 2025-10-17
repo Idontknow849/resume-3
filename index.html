@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Colorful Resume Builder</title>
+<style>
+/* ===== RESET & BASE ===== */
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif;}
+body{background:#0f172a;color:#fff;display:flex;flex-direction:column;align-items:center;min-height:100vh;}
+h2{margin:10px 0;font-size:1rem;color:#0ef;}
+.container{display:flex;flex-wrap:wrap;justify-content:center;width:100%;max-width:1200px;padding:20px;gap:20px;}
+form, .preview{background:#1e293b;border-radius:10px;padding:20px;flex:1;min-width:320px;}
+button, select, input, textarea{border:none;border-radius:6px;outline:none;padding:10px;margin-top:6px;width:100%;font-size:0.9rem;}
+button{cursor:pointer;background:#0ef;color:#000;font-weight:bold;transition:0.2s;}
+button:hover{background:#09c;}
+textarea{resize:vertical;min-height:70px;}
+.section{margin-bottom:20px;}
+label{font-weight:bold;color:#0ef;font-size:0.9rem;}
+input[type="color"]{padding:0;height:40px;width:60px;cursor:pointer;}
+.add-btn{background:#22c55e;color:#fff;margin-top:10px;}
+.add-btn:hover{background:#16a34a;}
+.del-btn{background:#ef4444;color:#fff;font-size:0.8rem;padding:5px 8px;margin-top:4px;}
+.resume-header{color:var(--accent,#0ef);}
+.resume{background:#fff;color:#000;border-radius:10px;padding:30px;max-width:800px;margin:auto;line-height:1.4;}
+.resume h1{font-size:1.6rem;color:var(--accent,#0ef);}
+.resume h3{color:var(--accent,#0ef);margin-top:12px;}
+.resume h4{color:#111;margin-top:10px;}
+.resume p, .resume li{font-size:0.9rem;}
+.resume ul{margin-left:20px;}
+.resume .skills span{background:var(--accent,#0ef);color:#fff;border-radius:15px;padding:4px 10px;font-size:0.8rem;margin:3px;display:inline-block;}
+.top-actions{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;}
+@media print{
+    body{background:#fff;color:#000;}
+    .container,.form-section,.top-actions{display:none;}
+    .resume{color:#000;}
+}
+</style>
+</head>
+<body>
+<div class="top-actions">
+  <h2>🎨 Colorful Resume Builder</h2>
+  <div>
+    <label>Accent Color: <input type="color" id="accentColor" value="#00ffff"></label>
+    <button onclick="window.print()">🖨 Print / Save PDF</button>
+  </div>
+</div>
+
+<div class="container">
+  <form id="resumeForm">
+    <div class="section">
+      <h2>Personal Details</h2>
+      <label>Name</label><input id="name" required>
+      <label>Title</label><input id="title">
+      <label>Email</label><input id="email" type="email">
+      <label>Phone</label><input id="phone">
+      <label>LinkedIn</label><input id="linkedin">
+      <label>Portfolio</label><input id="portfolio">
+      <label>Summary</label><textarea id="summary"></textarea>
+    </div>
+
+    <div class="section" id="experienceSection">
+      <h2>Experience</h2>
+      <div class="exp">
+        <label>Job Title</label><input class="jobTitle">
+        <label>Company</label><input class="company">
+        <label>Year</label><input class="year">
+        <label>Description</label><textarea class="expDesc"></textarea>
+        <button type="button" class="del-btn" onclick="this.parentElement.remove();saveData()">Remove</button>
+      </div>
+      <button type="button" class="add-btn" onclick="addExp()">+ Add Experience</button>
+    </div>
+
+    <div class="section" id="projectSection">
+      <h2>Projects</h2>
+      <div class="proj">
+        <label>Project Name</label><input class="projName">
+        <label>Link</label><input class="projLink">
+        <label>Description</label><textarea class="projDesc"></textarea>
+        <button type="button" class="del-btn" onclick="this.parentElement.remove();saveData()">Remove</button>
+      </div>
+      <button type="button" class="add-btn" onclick="addProj()">+ Add Project</button>
+    </div>
+
+    <div class="section" id="educationSection">
+      <h2>Education</h2>
+      <div class="edu">
+        <label>Degree / Certificate</label><input class="degree">
+        <label>Institution</label><input class="inst">
+        <label>Year</label><input class="eduYear">
+        <button type="button" class="del-btn" onclick="this.parentElement.remove();saveData()">Remove</button>
+      </div>
+      <button type="button" class="add-btn" onclick="addEdu()">+ Add Education</button>
+    </div>
+
+    <div class="section">
+      <h2>Skills</h2>
+      <label>Comma separated</label>
+      <input id="skills">
+    </div>
+
+    <button type="button" onclick="saveData()">💾 Save</button>
+    <button type="button" onclick="resetForm()">Reset</button>
+  </form>
+
+  <div class="preview">
+    <div class="resume" id="resumePreview">
+      <h1 id="pName">Your Name</h1>
+      <h3 id="pTitle">Your Professional Title</h3>
+      <p><span id="pEmail">email@example.com</span> | 
+         <span id="pPhone">123-456-7890</span> | 
+         <span id="pLinkedin">linkedin.com/in/username</span> | 
+         <span id="pPortfolio">portfolio.com</span></p>
+      <h3>SUMMARY</h3><p id="pSummary">Brief summary here...</p>
+      <h3>EXPERIENCE</h3><div id="pExperience"></div>
+      <h3>PROJECTS</h3><div id="pProjects"></div>
+      <h3>EDUCATION</h3><div id="pEducation"></div>
+      <h3>SKILLS</h3><div class="skills" id="pSkills"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function qs(sel, par=document){return par.querySelector(sel)}
+function qsa(sel, par=document){return [...par.querySelectorAll(sel)]}
+
+const fields = ["name","title","email","phone","linkedin","portfolio","summary","skills"];
+
+function updatePreview(){
+  const accent = qs("#accentColor").value;
+  document.querySelector(":root").style.setProperty("--accent",accent);
+  qs("#pName").textContent = qs("#name").value || "Your Name";
+  qs("#pTitle").textContent = qs("#title").value || "Your Professional Title";
+  qs("#pEmail").textContent = qs("#email").value;
+  qs("#pPhone").textContent = qs("#phone").value;
+  qs("#pLinkedin").textContent = qs("#linkedin").value;
+  qs("#pPortfolio").textContent = qs("#portfolio").value;
+  qs("#pSummary").textContent = qs("#summary").value;
+
+  // Experience
+  let expHTML="";
+  qsa("#experienceSection .exp").forEach(e=>{
+    const j=e.querySelector(".jobTitle").value;
+    const c=e.querySelector(".company").value;
+    const y=e.querySelector(".year").value;
+    const d=e.querySelector(".expDesc").value;
+    expHTML+=`<div><h4>${j||""} - ${c||""}</h4><p><em>${y||""}</em></p><p>${d||""}</p></div>`;
+  });
+  qs("#pExperience").innerHTML=expHTML||"<p>No experience added.</p>";
+
+  // Projects
+  let projHTML="";
+  qsa("#projectSection .proj").forEach(p=>{
+    const n=p.querySelector(".projName").value;
+    const l=p.querySelector(".projLink").value;
+    const d=p.querySelector(".projDesc").value;
+    projHTML+=`<div><h4>${n||""}</h4><p>${d||""}</p><a href="${l||"#"}" target="_blank">${l||""}</a></div>`;
+  });
+  qs("#pProjects").innerHTML=projHTML||"<p>No projects added.</p>";
+
+  // Education
+  let eduHTML="";
+  qsa("#educationSection .edu").forEach(ed=>{
+    const de=ed.querySelector(".degree").value;
+    const i=ed.querySelector(".inst").value;
+    const y=ed.querySelector(".eduYear").value;
+    eduHTML+=`<p><strong>${de||""}</strong> - ${i||""} (${y||""})</p>`;
+  });
+  qs("#pEducation").innerHTML=eduHTML||"<p>No education added.</p>";
+
+  // Skills
+  let s = qs("#skills").value.split(",").map(x=>x.trim()).filter(Boolean);
+  qs("#pSkills").innerHTML = s.map(sk=>`<span>${sk}</span>`).join("");
+}
+
+function addExp(){
+  const div=document.createElement("div");
+  div.className="exp";
+  div.innerHTML=`<label>Job Title</label><input class="jobTitle">
+  <label>Company</label><input class="company">
+  <label>Year</label><input class="year">
+  <label>Description</label><textarea class="expDesc"></textarea>
+  <button type="button" class="del-btn" onclick="this.parentElement.remove();saveData()">Remove</button>`;
+  qs("#experienceSection").insertBefore(div,qs("#experienceSection .add-btn"));
+  attachListeners();
+}
+function addProj(){
+  const div=document.createElement("div");
+  div.className="proj";
+  div.innerHTML=`<label>Project Name</label><input class="projName">
+  <label>Link</label><input class="projLink">
+  <label>Description</label><textarea class="projDesc"></textarea>
+  <button type="button" class="del-btn" onclick="this.parentElement.remove();saveData()">Remove</button>`;
+  qs("#projectSection").insertBefore(div,qs("#projectSection .add-btn"));
+  attachListeners();
+}
+function addEdu(){
+  const div=document.createElement("div");
+  div.className="edu";
+  div.innerHTML=`<label>Degree / Certificate</label><input class="degree">
+  <label>Institution</label><input class="inst">
+  <label>Year</label><input class="eduYear">
+  <button type="button" class="del-btn" onclick="this.parentElement.remove();saveData()">Remove</button>`;
+  qs("#educationSection").insertBefore(div,qs("#educationSection .add-btn"));
+  attachListeners();
+}
+
+function attachListeners(){
+  document.querySelectorAll("input,textarea,select").forEach(i=>{
+    i.oninput=()=>{updatePreview();saveData();}
+  });
+  qs("#accentColor").oninput=updatePreview;
+}
+
+function saveData(){
+  const data={};
+  fields.forEach(f=>data[f]=qs("#"+f).value);
+  data.experience=qsa("#experienceSection .exp").map(e=>({
+    job:e.querySelector(".jobTitle").value,
+    company:e.querySelector(".company").value,
+    year:e.querySelector(".year").value,
+    desc:e.querySelector(".expDesc").value
+  }));
+  data.projects=qsa("#projectSection .proj").map(p=>({
+    name:p.querySelector(".projName").value,
+    link:p.querySelector(".projLink").value,
+    desc:p.querySelector(".projDesc").value
+  }));
+  data.education=qsa("#educationSection .edu").map(ed=>({
+    degree:ed.querySelector(".degree").value,
+    inst:ed.querySelector(".inst").value,
+    year:ed.querySelector(".eduYear").value
+  }));
+  localStorage.setItem("resumeData",JSON.stringify(data));
+}
+function loadData(){
+  const s=localStorage.getItem("resumeData");
+  if(!s) return;
+  const d=JSON.parse(s);
+  fields.forEach(f=>{if(d[f])qs("#"+f).value=d[f];});
+  // rebuild lists
+  qs("#experienceSection").querySelectorAll(".exp").forEach((e,i)=>i>0&&e.remove());
+  qs("#projectSection").querySelectorAll(".proj").forEach((e,i)=>i>0&&e.remove());
+  qs("#educationSection").querySelectorAll(".edu").forEach((e,i)=>i>0&&e.remove());
+  d.experience?.forEach((e,i)=>{if(i>0)addExp();
+    const el=qsa("#experienceSection .exp")[i];
+    el.querySelector(".jobTitle").value=e.job;el.querySelector(".company").value=e.company;
+    el.querySelector(".year").value=e.year;el.querySelector(".expDesc").value=e.desc;
+  });
+  d.projects?.forEach((p,i)=>{if(i>0)addProj();
+    const el=qsa("#projectSection .proj")[i];
+    el.querySelector(".projName").value=p.name;el.querySelector(".projLink").value=p.link;el.querySelector(".projDesc").value=p.desc;
+  });
+  d.education?.forEach((ed,i)=>{if(i>0)addEdu();
+    const el=qsa("#educationSection .edu")[i];
+    el.querySelector(".degree").value=ed.degree;el.querySelector(".inst").value=ed.inst;el.querySelector(".eduYear").value=ed.year;
+  });
+}
+
+function resetForm(){
+  localStorage.removeItem("resumeData");
+  location.reload();
+}
+
+attachListeners();
+loadData();
+updatePreview();
+</script>
+</body>
+</html>
