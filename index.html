@@ -1,482 +1,215 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>ChromaResume — Modern Centered Resume Builder</title>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harshvardhan Sangam - Portfolio</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-:root{
-  --bg:#0b1020;
-  --panel:#0f1724;
-  --muted:#9fb3c8;
-  --card:#ffffff;
-  --accent1:#5eead4;
-  --accent2:#7c3aed;
-  --accent-grad: linear-gradient(135deg,var(--accent1),var(--accent2));
-  --max-width:900px;
-  --resume-width:794px;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);-webkit-font-smoothing:antialiased}
-.container{max-width:var(--max-width);margin:28px auto;padding:20px;display:flex;flex-direction:column;gap:20px;align-items:center}
-.header{width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px}
-.brand{font-weight:800;color:white;letter-spacing:0.2px}
-.controls{display:flex;gap:8px;align-items:center}
-.btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;color:var(--muted);cursor:pointer}
-.btn.primary{background:var(--accent-grad);color:#041014;border:0;box-shadow:0 6px 20px rgba(124,58,237,0.14)}
-.layout{width:100%;display:flex;flex-direction:column;gap:18px;align-items:center}
+body { margin:0; font-family:"Poppins",sans-serif; background:#0a0f1f; color:#d4e0f5; }
+a { color:#00b7ff; text-decoration:none; }
+nav { background: rgba(10,15,31,0.95); display:flex; justify-content:space-between; align-items:center; padding:1rem 2rem; position:sticky; top:0; z-index:100; border-bottom:1px solid #12223a; }
+nav h1 { font-size:1.3rem; }
+nav ul { display:flex; list-style:none; gap:1.5rem; }
+nav ul li { cursor:pointer; transition:0.3s; }
+nav ul li:hover { color:#00e0ff; }
 
-/* Form */
-.form{
-  width:100%;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.03));
-  border-radius:14px;padding:18px;border:1px solid rgba(255,255,255,0.03);
-  display:grid;grid-template-columns:repeat(2,1fr);gap:12px;
-}
-.form .full{grid-column:1/-1}
-label{display:block;font-size:13px;color:var(--accent1);margin-bottom:6px;font-weight:600}
-input, textarea, select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:white;font-size:14px}
-textarea{min-height:84px;resize:vertical}
-.form-foot{width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px}
-.small{font-size:12px;color:var(--muted)}
+.hero { text-align:center; padding:5rem 2rem; background:linear-gradient(145deg,#0b132b,#1c2541);}
+.hero img { width:130px; height:130px; border-radius:50%; border:3px solid #00b7ff; margin-bottom:1rem;}
+.hero h2 { font-size:2rem; margin-bottom:0.5rem;}
+.hero p { max-width:600px; margin:0 auto 1rem;}
+button { background:#00b7ff; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; transition:0.3s;}
+button:hover { background:#00e0ff; }
 
-/* Preview area */
-.preview-wrap{width:100%;display:flex;justify-content:center}
-.preview-card{width:calc(var(--resume-width));background:var(--card);border-radius:10px;padding:28px;box-shadow:0 10px 30px rgba(2,6,23,0.5);color:#042b2b}
-.preview-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-.preview-name{font-size:28px;font-weight:800;color:transparent;background-clip:text;-webkit-background-clip:text;background-image:var(--accent-grad)}
-.preview-title{font-size:14px;color:#0b2a2a;margin-top:6px}
-.preview-meta{font-size:13px;color:#245e57;margin-top:6px}
-.section{margin-top:18px}
-.section h4{margin:0 0 8px 0;color:var(--accent2);font-size:13px}
-.item strong{color:#082b2b}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{background:linear-gradient(180deg,var(--accent1),var(--accent2));color:#041014;padding:6px 10px;border-radius:999px;font-weight:700;font-size:12px}
+.sections { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:1.5rem; padding:3rem 2rem;}
+.section-card { background:#121a2f; border-radius:12px; padding:2rem; text-align:center; cursor:pointer; transition:0.3s;}
+.section-card:hover { transform:translateY(-5px); background:#18233b; }
+.section-card h3 { color:#00e0ff; }
 
-/* Responsive */
-@media (max-width:980px){
-  .form{grid-template-columns:1fr}
-  .preview-card{width:100%}
-  :root{--resume-width:680px}
+.full-page-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:#0a0f1f; display:none; flex-direction:column; z-index:200; overflow-y:auto; animation:fadeIn 0.4s ease-in-out; }
+.full-page-overlay.active { display:flex; }
+.full-page-overlay .content { max-width:900px; margin:2rem auto; text-align:left; padding:0 1rem 3rem; }
+.full-page-overlay h2 { font-size:2rem; color:#00e0ff; margin-bottom:1rem; }
+.full-page-overlay p, .full-page-overlay ul { color:#b9c8e2; margin-bottom:1rem; }
+.full-page-overlay ul { list-style:none; padding-left:0; }
+.full-page-overlay ul li { margin:6px 0; }
+
+.return-btn { display:block; margin:2rem auto; }
+.social-links { display:flex; justify-content:center; gap:1rem; margin-bottom:2rem; flex-wrap:wrap;}
+.social-links a { font-size:1.5rem; color:#00b7ff; transition:0.3s;}
+.social-links a:hover { color:#00e0ff; }
+
+.gallery img, .certificates img { width:150px; margin:10px; border-radius:10px; border:2px solid #00b7ff; }
+
+@keyframes fadeIn { from {opacity:0; transform:scale(0.98);} to {opacity:1; transform:scale(1);} }
+
+@media (max-width:768px) {
+  .hero h2 { font-size:1.5rem; }
+  .hero p { font-size:0.9rem; }
+  .sections { grid-template-columns:1fr; padding:2rem; }
+  .section-card { padding:1.5rem; }
+  .full-page-overlay .content { padding:1rem; margin:1rem auto; }
+  .full-page-overlay h2 { font-size:1.5rem; text-align:center; }
+  .full-page-overlay p, .full-page-overlay ul { font-size:0.9rem; text-align:center; }
+  .social-links a { font-size:1.3rem; }
+  .gallery img, .certificates img { width:120px; }
 }
-@media (max-width:560px){
-  .container{padding:12px}
-  .brand{font-size:16px}
+
+@media (max-width:480px) {
+  nav { flex-direction: column; gap:0.5rem; padding:1rem; }
+  .hero { padding:3rem 1rem; }
+  .hero img { width:100px; height:100px; }
+  button { padding:8px 16px; font-size:0.9rem; }
+  .return-btn { padding:8px 16px; font-size:0.9rem; }
+  .gallery img, .certificates img { width:100px; }
 }
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <div class="brand">Chroma<span style="background:var(--accent-grad);-webkit-background-clip:text;color:transparent">Resume</span></div>
-    <div class="controls">
-      <button id="saveBtn" class="btn">Save</button>
-      <button id="downloadPdf" class="btn primary">Download PDF</button>
-      <button id="clearBtn" class="btn">Clear</button>
-    </div>
-  </div>
 
-  <div class="layout">
-    <form id="resumeForm" class="form" onsubmit="return false">
-      <div class="full">
-        <label>Full name</label>
-        <input id="inputName" placeholder="Sangam" />
-      </div>
-      <div>
-        <label>Title / Role</label>
-        <input id="inputTitle" placeholder="Frontend Developer" />
-      </div>
-      <div>
-        <label>Email</label>
-        <input id="inputEmail" placeholder="you@example.com" type="email" />
-      </div>
-      <div>
-        <label>Phone</label>
-        <input id="inputPhone" placeholder="+91 9xx-xxx-xxxx" />
-      </div>
-      <div>
-        <label>Location</label>
-        <input id="inputLocation" placeholder="City, Country" />
-      </div>
-      <div>
-        <label>Website / LinkedIn</label>
-        <input id="inputWebsite" placeholder="https://..." />
-      </div>
-      <div class="full">
-        <label>Professional summary</label>
-        <textarea id="inputSummary" placeholder="Brief summary..."></textarea>
-      </div>
+<nav>
+  <h1>Harshvardhan Sangam</h1>
+  <ul>
+    <li onclick="scrollToSection('main-sections')">Main Menu</li>
+  </ul>
+</nav>
 
-      <!-- Experience block -->
-      <div class="full">
-        <label>Experience (add multiple)</label>
-        <div id="expContainer"></div>
-        <div style="margin-top:8px;display:flex;gap:8px">
-          <button id="addExpBtn" class="btn" type="button">+ Add experience</button>
-        </div>
-      </div>
+<section class="hero">
+  <img src="https://via.placeholder.com/130" alt="Profile">
+  <h2>Welcome to My Portfolio</h2>
+  <p>I’m <b>Harshvardhan Sangam</b>, a BCA student passionate about technology, business, and innovation.</p>
+  <button onclick="scrollToSection('main-sections')">Explore</button>
+</section>
 
-      <!-- Projects -->
-      <div class="full">
-        <label>Projects (add multiple)</label>
-        <div id="projContainer"></div>
-        <div style="margin-top:8px;display:flex;gap:8px">
-          <button id="addProjBtn" class="btn" type="button">+ Add project</button>
-        </div>
-      </div>
+<section id="main-sections" class="sections">
+  <div class="section-card" onclick="openSection('summary')"><h3>Summary</h3></div>
+  <div class="section-card" onclick="openSection('education')"><h3>Education</h3></div>
+  <div class="section-card" onclick="openSection('experience')"><h3>Experience</h3></div>
+  <div class="section-card" onclick="openSection('skills')"><h3>Skills</h3></div>
+  <div class="section-card" onclick="openSection('projects')"><h3>Projects</h3></div>
+  <div class="section-card" onclick="openSection('upcoming')"><h3>Upcoming Projects</h3></div>
+  <div class="section-card" onclick="openSection('startup')"><h3>Startup</h3></div>
+  <div class="section-card" onclick="openSection('gallery')"><h3>Gallery</h3></div>
+  <div class="section-card" onclick="openSection('certificates')"><h3>Certificates</h3></div>
+</section>
 
-      <!-- Skills -->
-      <div class="full">
-        <label>Skills (comma separated)</label>
-        <input id="inputSkills" placeholder="React, Node.js, SQL" />
-      </div>
+<!-- ===== FULL PAGE SECTIONS ===== -->
+<div id="summary" class="full-page-overlay"><div class="content" contenteditable="true">
+<h2>Profile Summary</h2>
+<p>Motivated and tech-driven BCA student aiming to contribute to organizational growth while developing new skills in business, marketing, and technology.</p>
+<button class="return-btn" onclick="closeSection()">Return to Main Menu</button>
+<div class="social-links">
+<a href="#"><i class="fab fa-linkedin"></i></a>
+<a href="#"><i class="fab fa-github"></i></a>
+<a href="#"><i class="fab fa-twitter"></i></a>
+</div></div></div>
 
-      <!-- Color options -->
-      <div class="full">
-        <label>Accent Gradient Start</label>
-        <input type="color" id="colorAccent1" value="#5eead4" />
-      </div>
-      <div class="full">
-        <label>Accent Gradient End</label>
-        <input type="color" id="colorAccent2" value="#7c3aed" />
-      </div>
-      <div class="full">
-        <label>Text Color</label>
-        <input type="color" id="colorText" value="#042b2b" />
-      </div>
-      <div class="full">
-        <label>Background Color</label>
-        <input type="color" id="colorBackground" value="#ffffff" />
-      </div>
+<div id="education" class="full-page-overlay"><div class="content" contenteditable="true">
+<h2>Education</h2>
+<ul>
+<li>BCA – BRABU University (2024–2027)</li>
+<li>12th (Science) – BSEB Board, 2024</li>
+<li>10th – CBSE Board, 2022</li>
+<li>ADCA – PDTCE Pvt. Ltd, 2024</li>
+</ul>
+<button class="return-btn" onclick="closeSection()">Return to Main Menu</button>
+<div class="social-links"><a href="#"><i class="fab fa-linkedin"></i></a><a href="#"><i class="fab fa-github"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div></div></div>
 
-      <div class="form-foot full">
-        <div class="small">All data stays in your browser (LocalStorage)</div>
-        <div style="display:flex;gap:8px">
-          <button id="previewBtn" class="btn" type="button">Refresh Preview</button>
-        </div>
-      </div>
-    </form>
+<div id="experience" class="full-page-overlay"><div class="content" contenteditable="true">
+<h2>Experience</h2>
+<p>Fresher – Currently developing practical skills through academic projects and independent learning.</p>
+<button class="return-btn" onclick="closeSection()">Return to Main Menu</button>
+<div class="social-links"><a href="#"><i class="fab fa-linkedin"></i></a><a href="#"><i class="fab fa-github"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div></div></div>
 
-    <div class="preview-wrap">
-      <div id="preview" class="preview-card" role="region" aria-label="Resume preview">
-        <div class="preview-header">
-          <div>
-            <div class="preview-name" id="pvName">Name - Sangam</div>
-            <div class="preview-title" id="pvTitle">Frontend Developer</div>
-            <div class="preview-meta" id="pvMeta">you@example.com • +91 9xx-xxx-xxxx • yoursite</div>
-          </div>
-        </div>
-        <div class="section">
-          <h4>Professional Summary</h4>
-          <div id="pvSummary" class="item">A short professional summary goes here.</div>
-        </div>
-        <div class="section">
-          <h4>Experience</h4>
-          <div id="pvExperience"></div>
-        </div>
-        <div class="section">
-          <h4>Projects</h4>
-          <div id="pvProjects"></div>
-        </div>
-        <div class="section">
-          <h4>Skills</h4>
-          <div id="pvSkills" class="chips"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<div id="skills" class="full-page-overlay"><div class="content" contenteditable="true">
+<h2>Skills</h2>
+<ul>
+<li>MS Office Suite</li>
+<li>Spreadsheets & Presentations</li>
+<li>Artificial Intelligence (Basics)</li>
+<li>Marketing & Sales Management</li>
+<li>Technology Research & Adaptation</li>
+</ul>
+<button class="return-btn" onclick="closeSection()">Return to Main Menu</button>
+<div class="social-links"><a href="#"><i class="fab fa-linkedin"></i></a><a href="#"><i class="fab fa-github"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div></div></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<div id="projects" class="full-page-overlay"><div class="content" contenteditable="true">
+<h2>Projects</h2>
+<p>• Personal Resume Website (HTML, CSS, JS)<br>• AI Tools Research Blog<br>• Student Community Platform – “College to CEO”</p>
+<button class="return-btn" onclick="closeSection()">Return to Main Menu</button>
+<div class="social-links"><a href="#"><i class="fab fa-linkedin"></i></a><a href="#"><i class="fab fa-github"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div></div></div>
+
+<div id="upcoming" class="full-page-overlay"><div class="content" contenteditable="true">
+<h2>Upcoming Projects</h2>
+<p>Working on launching new educational tech-based tools and community-driven projects to help students learn and grow faster.</p>
+<button class="return-btn" onclick="closeSection()">Return to Main Menu</button>
+<div class="social-links"><a href="#"><i class="fab fa-linkedin"></i></a><a href="#"><i class="fab fa-github"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div></div></div>
+
+<div id="startup" class="full-page-overlay"><div class="content" contenteditable="true">
+<h2>Startup</h2>
+<p>Founder of an early-stage student tech community “College to CEO” focusing on mentoring, projects, and startup learning paths for students.</p>
+<button class="return-btn" onclick="closeSection()">Return to Main Menu</button>
+<div class="social-links"><a href="#"><i class="fab fa-linkedin"></i></a><a href="#"><i class="fab fa-github"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div></div></div>
+
+<div id="gallery" class="full-page-overlay"><div class="content" contenteditable="true">
+<h2>Gallery</h2>
+<img src="https://via.placeholder.com/150" alt="Gallery 1">
+<img src="https://via.placeholder.com/150" alt="Gallery 2">
+<button class="return-btn" onclick="closeSection()">Return to Main Menu</button>
+<div class="social-links"><a href="#"><i class="fab fa-linkedin"></i></a><a href="#"><i class="fab fa-github"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div></div></div>
+
+<div id="certificates" class="full-page-overlay"><div class="content" contenteditable="true">
+<h2>Certificates</h2>
+<img src="https://via.placeholder.com/150" alt="Certificate 1">
+<img src="https://via.placeholder.com/150" alt="Certificate 2">
+<button class="return-btn" onclick="closeSection()">Return to Main Menu</button>
+<div class="social-links"><a href="#"><i class="fab fa-linkedin"></i></a><a href="#"><i class="fab fa-github"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div></div></div>
 
 <script>
-const { jsPDF } = window.jspdf;
-
-function $(id){ return document.getElementById(id); }
-function createEl(tag, props = {}, children = []) {
-  const el = document.createElement(tag);
-  Object.entries(props).forEach(([k,v]) => el.setAttribute(k, v));
-  children.forEach(c => el.appendChild(c));
-  return el;
+function openSection(id){
+  document.querySelectorAll('.full-page-overlay').forEach(el=>el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById(id).scrollTop = 0;
 }
-function escapeHtml(s=''){ return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-
-const inputName = $('inputName');
-const inputTitle = $('inputTitle');
-const inputEmail = $('inputEmail');
-const inputPhone = $('inputPhone');
-const inputLocation = $('inputLocation');
-const inputWebsite = $('inputWebsite');
-const inputSummary = $('inputSummary');
-const inputSkills = $('inputSkills');
-const expContainer = $('expContainer');
-const projContainer = $('projContainer');
-const pvName = $('pvName');
-const pvTitle = $('pvTitle');
-const pvMeta = $('pvMeta');
-const pvSummary = $('pvSummary');
-const pvExperience = $('pvExperience');
-const pvProjects = $('pvProjects');
-const pvSkills = $('pvSkills');
-const addExpBtn = $('addExpBtn');
-const addProjBtn = $('addProjBtn');
-const previewBtn = $('previewBtn');
-const saveBtn = $('saveBtn');
-const clearBtn = $('clearBtn');
-const downloadPdf = $('downloadPdf');
-const colorAccent1 = $('colorAccent1');
-const colorAccent2 = $('colorAccent2');
-const colorText = $('colorText');
-const colorBackground = $('colorBackground');
-
-const LS_KEY = 'chroma_resume_modern_v2';
-let state = { personal:{}, experiences:[], projects:[], skills:[], colors:{} };
-
-function makeExpBlock(data={}) {
-  const wrapper = createEl('div',{class:'exp-block'});
-  wrapper.style.marginBottom='8px';
-  wrapper.innerHTML = `
-    <div style="display:flex;gap:8px">
-      <input class="exp-role" placeholder="Role" style="flex:1" />
-      <input class="exp-company" placeholder="Company" style="flex:1" />
-    </div>
-    <div style="display:flex;gap:8px;margin-top:6px">
-      <input class="exp-dates" placeholder="Dates" style="flex:1" />
-      <input class="exp-loc" placeholder="Location" style="flex:1" />
-    </div>
-    <textarea class="exp-desc" placeholder="Description" style="margin-top:6px"></textarea>
-    <div style="margin-top:6px"><button type="button" class="btn" style="background:#fde68a;color:#041014;border-radius:8px;padding:6px 10px">Remove</button></div>
-  `;
-  wrapper.querySelector('.exp-role').value=data.role||'';
-  wrapper.querySelector('.exp-company').value=data.company||'';
-  wrapper.querySelector('.exp-dates').value=data.dates||'';
-  wrapper.querySelector('.exp-loc').value=data.location||'';
-  wrapper.querySelector('.exp-desc').value=data.description||'';
-  wrapper.querySelector('button').addEventListener('click',()=>{ wrapper.remove(); renderPreview(); saveState(); });
-  wrapper.querySelectorAll('input,textarea').forEach(el=>el.addEventListener('input',()=>{ renderPreview(); autosaveDebounced(); }));
-  return wrapper;
+function closeSection(){
+  document.querySelectorAll('.full-page-overlay').forEach(el=>el.classList.remove('active'));
 }
-
-function makeProjBlock(data={}) {
-  const wrapper = createEl('div',{class:'proj-block'});
-  wrapper.style.marginBottom='8px';
-  wrapper.innerHTML = `
-    <input class="proj-name" placeholder="Project name" style="width:100%;margin-bottom:6px" />
-    <input class="proj-link" placeholder="Link (optional)" style="width:100%;margin-bottom:6px" />
-    <textarea class="proj-desc" placeholder="Description" style="width:100%"></textarea>
-    <div style="margin-top:6px"><button type="button" class="btn" style="background:#fecaca;color:#041014;border-radius:8px;padding:6px 10px">Remove</button></div>
-  `;
-  wrapper.querySelector('.proj-name').value=data.name||'';
-  wrapper.querySelector('.proj-link').value=data.link||'';
-  wrapper.querySelector('.proj-desc').value=data.description||'';
-  wrapper.querySelector('button').addEventListener('click',()=>{ wrapper.remove(); renderPreview(); saveState(); });
-  wrapper.querySelectorAll('input,textarea').forEach(el=>el.addEventListener('input',()=>{ renderPreview(); autosaveDebounced(); }));
-  return wrapper;
+function scrollToSection(id){
+  document.getElementById(id)?.scrollIntoView({behavior:"smooth"});
 }
-
-addExpBtn.addEventListener('click',()=>{ expContainer.appendChild(makeExpBlock()); autosaveDebounced(); });
-addProjBtn.addEventListener('click',()=>{ projContainer.appendChild(makeProjBlock()); autosaveDebounced(); });
-
-function renderPreview(){
-  const name=inputName.value.trim()||'Sangam';
-  const title=inputTitle.value.trim()||'Professional Title';
-  const email=inputEmail.value.trim();
-  const phone=inputPhone.value.trim();
-  const location=inputLocation.value.trim();
-  const website=inputWebsite.value.trim();
-  const summary=inputSummary.value.trim()||'A brief professional summary...';
-  const skillsArr = inputSkills.value.split(',').map(s=>s.trim()).filter(Boolean);
-
-  // Colors
-  const accent1=colorAccent1.value, accent2=colorAccent2.value, text=colorText.value, bg=colorBackground.value;
-
-  pvName.style.backgroundImage=`linear-gradient(135deg, ${accent1}, ${accent2})`;
-  pvTitle.style.color=text;
-  pvSummary.style.color=text;
-  pvExperience.querySelectorAll('.item').forEach(i=>i.style.color=text);
-  pvProjects.querySelectorAll('.item').forEach(i=>i.style.color=text);
-  pvSkills.querySelectorAll('.chip').forEach(c=>{ c.style.background=`linear-gradient(180deg, ${accent1}, ${accent2})`; c.style.color=text; });
-  document.querySelector('.preview-card').style.backgroundColor=bg;
-
-  pvName.textContent='Name - '+name;
-  pvTitle.textContent=title;
-  pvMeta.textContent=[email,phone,location,website].filter(Boolean).join(' • ');
-  pvSummary.textContent=summary;
-
-  // Experiences
-  pvExperience.innerHTML='';
-  const expBlocks=expContainer.querySelectorAll('.exp-block');
-  if(expBlocks.length===0) pvExperience.innerHTML='<div class="item small">No experience added.</div>';
-  expBlocks.forEach(b=>{
-    const r=b.querySelector('.exp-role').value;
-    const c=b.querySelector('.exp-company').value;
-    const d=b.querySelector('.exp-dates').value;
-    const l=b.querySelector('.exp-loc').value;
-    const desc=b.querySelector('.exp-desc').value;
-    const item=createEl('div',{class:'item'});
-    item.style.marginBottom='10px';
-    item.innerHTML=`<div><strong>${escapeHtml(r||'')}${(r&&c)?' — ':''}${escapeHtml(c||'')}</strong></div>
-                    <div style="color:#0a7c6f;font-size:12px">${escapeHtml(d||'')}${(d&&l)?' • ':''}${escapeHtml(l||'')}</div>
-                    <div style="margin-top:6px">${escapeHtml(desc||'')}</div>`;
-    pvExperience.appendChild(item);
-  });
-
-  // Projects
-  pvProjects.innerHTML='';
-  const projBlocks=projContainer.querySelectorAll('.proj-block');
-  if(projBlocks.length===0) pvProjects.innerHTML='<div class="item small">No projects added.</div>';
-  projBlocks.forEach(b=>{
-    const n=b.querySelector('.proj-name').value;
-    const link=b.querySelector('.proj-link').value;
-    const d=b.querySelector('.proj-desc').value;
-    const item=createEl('div',{class:'item'});
-    item.style.marginBottom='10px';
-    item.innerHTML=`<div><strong>${escapeHtml(n||'')}</strong></div>
-                    ${link?`<div style="color:#0a7c6f;font-size:12px"><a href="${escapeHtml(link)}" target="_blank">${escapeHtml(link)}</a></div>`:''}
-                    <div style="margin-top:6px">${escapeHtml(d||'')}</div>`;
-    pvProjects.appendChild(item);
-  });
-
-  // Skills
-  pvSkills.innerHTML=skillsArr.map(s=>`<span class="chip">${escapeHtml(s)}</span>`).join(' ');
-}
-
-function saveState(){
-  const data={
-    personal:{
-      name: inputName.value,
-      title: inputTitle.value,
-      email: inputEmail.value,
-      phone: inputPhone.value,
-      location: inputLocation.value,
-      website: inputWebsite.value,
-      summary: inputSummary.value
-    },
-    experiences:Array.from(expContainer.querySelectorAll('.exp-block')).map(b=>({
-      role: b.querySelector('.exp-role').value,
-      company: b.querySelector('.exp-company').value,
-      dates: b.querySelector('.exp-dates').value,
-      location: b.querySelector('.exp-loc').value,
-      description: b.querySelector('.exp-desc').value
-    })),
-    projects:Array.from(projContainer.querySelectorAll('.proj-block')).map(b=>({
-      name: b.querySelector('.proj-name').value,
-      link: b.querySelector('.proj-link').value,
-      description: b.querySelector('.proj-desc').value
-    })),
-    skills: inputSkills.value,
-    colors:{
-      accent1: colorAccent1.value,
-      accent2: colorAccent2.value,
-      text: colorText.value,
-      background: colorBackground.value
-    }
-  };
-  localStorage.setItem(LS_KEY, JSON.stringify(data));
-  saveBtn.textContent='Saved ✓';
-  setTimeout(()=>saveBtn.textContent='Save',900);
-}
-
-function loadState(){
-  const raw=localStorage.getItem(LS_KEY);
-  if(!raw) return;
-  try{
-    const data=JSON.parse(raw);
-    inputName.value=data.personal?.name||'';
-    inputTitle.value=data.personal?.title||'';
-    inputEmail.value=data.personal?.email||'';
-    inputPhone.value=data.personal?.phone||'';
-    inputLocation.value=data.personal?.location||'';
-    inputWebsite.value=data.personal?.website||'';
-    inputSummary.value=data.personal?.summary||'';
-    inputSkills.value=data.skills||'';
-    if(data.colors){
-      colorAccent1.value=data.colors.accent1||'#5eead4';
-      colorAccent2.value=data.colors.accent2||'#7c3aed';
-      colorText.value=data.colors.text||'#042b2b';
-      colorBackground.value=data.colors.background||'#ffffff';
-    }
-    expContainer.innerHTML='';
-    (data.experiences||[]).forEach(e=>expContainer.appendChild(makeExpBlock({
-      role:e.role, company:e.company, dates:e.dates, location:e.location, description:e.description
-    })));
-    projContainer.innerHTML='';
-    (data.projects||[]).forEach(p=>projContainer.appendChild(makeProjBlock({
-      name:p.name, link:p.link, description:p.description
-    })));
-  }catch(err){console.warn('Failed to load state',err);}
-}
-
-let saveTimer=null;
-function autosaveDebounced(){ clearTimeout(saveTimer); saveTimer=setTimeout(()=>{ saveState(); },800); }
-
-clearBtn.addEventListener('click',()=>{
-  if(!confirm('Clear all data from the form and LocalStorage?')) return;
-  localStorage.removeItem(LS_KEY);
-  inputName.value=inputTitle.value=inputEmail.value=inputPhone.value=inputLocation.value=inputWebsite.value=inputSummary.value=inputSkills.value='';
-  expContainer.innerHTML='';
-  projContainer.innerHTML='';
-  renderPreview();
-});
-
-previewBtn.addEventListener('click',()=>renderPreview());
-saveBtn.addEventListener('click',()=>saveState());
-downloadPdf.addEventListener('click',async ()=>{
-  renderPreview();
-  await exportPdf();
-});
-
-async function exportPdf(){
-  const btn=downloadPdf;
-  btn.disabled=true;
-  const originalText=btn.textContent;
-  btn.textContent='Rendering PDF...';
-  try{
-    const scale=2;
-    const previewEl=document.querySelector('.preview-card');
-    const canvas=await html2canvas(previewEl,{scale:scale,useCORS:true,allowTaint:false,backgroundColor:'#ffffff'});
-    const imgData=canvas.toDataURL('image/png',1.0);
-    const pdf=new jsPDF('p','mm','a4');
-    const pageWidth=pdf.internal.pageSize.getWidth();
-    const pageHeight=pdf.internal.pageSize.getHeight();
-    const imgW=canvas.width;
-    const imgH=canvas.height;
-    const mmPerPx=pageWidth/imgW;
-    const imgHeightMm=imgH*mmPerPx;
-    if(imgHeightMm<=pageHeight){
-      pdf.addImage(imgData,'PNG',0,0,pageWidth,imgHeightMm);
-    } else {
-      const pageHeightPx=Math.floor(pageHeight/mmPerPx);
-      let y=0;
-      while(y<imgH){
-        const sliceHeight=Math.min(pageHeightPx,imgH-y);
-        const tmpCanvas=document.createElement('canvas');
-        tmpCanvas.width=imgW; tmpCanvas.height=sliceHeight;
-        const ctx=tmpCanvas.getContext('2d');
-        ctx.drawImage(canvas,0,y,imgW,sliceHeight,0,0,imgW,sliceHeight);
-        const sliceData=tmpCanvas.toDataURL('image/png',1.0);
-        const sliceHeightMm=sliceHeight*mmPerPx;
-        pdf.addImage(sliceData,'PNG',0,0,pageWidth,sliceHeightMm);
-        y+=sliceHeight;
-        if(y<imgH) pdf.addPage();
-      }
-    }
-    const nameForFile=(inputName.value.trim()||'resume').replace(/\s+/g,'_').toLowerCase();
-    pdf.save(`${nameForFile}.pdf`);
-  }catch(err){console.error(err); alert('PDF export failed: '+(err?.message||err));}
-  finally{ btn.disabled=false; btn.textContent=originalText; }
-}
-
-(function init(){
-  if(expContainer.children.length===0) expContainer.appendChild(makeExpBlock({ role:'Frontend Developer', company:'Example Co', dates:'2022 - Present', location:'City', description:'Worked on UI & components' }));
-  if(projContainer.children.length===0) projContainer.appendChild(makeProjBlock({ name:'Portfolio Site', link:'https://example.com', description:'A personal portfolio website.' }));
-  loadState();
-  renderPreview();
-  document.querySelectorAll('input,textarea').forEach(el=>el.addEventListener('input',autosaveDebounced));
-  [colorAccent1,colorAccent2,colorText,colorBackground].forEach(el=>el.addEventListener('input',()=>{ renderPreview(); autosaveDebounced(); }));
-})();
 </script>
+<footer style="
+    background-color: #111;
+    color: white;
+    text-align: center;
+    padding: 30px 10px;
+    font-family: 'Poppins', sans-serif;
+">
+    <div style="margin-bottom: 15px;">
+        <!-- Social Media Links -->
+        <a href="https://facebook.com" target="_blank" style="color: white; margin: 0 10px; font-size: 22px; text-decoration: none;">
+            <i class="fab fa-facebook-f"></i>
+        </a>
+        <a href="https://twitter.com" target="_blank" style="color: white; margin: 0 10px; font-size: 22px; text-decoration: none;">
+            <i class="fab fa-twitter"></i>
+        </a>
+        <a href="https://linkedin.com" target="_blank" style="color: white; margin: 0 10px; font-size: 22px; text-decoration: none;">
+            <i class="fab fa-linkedin-in"></i>
+        </a>
+        <a href="https://instagram.com" target="_blank" style="color: white; margin: 0 10px; font-size: 22px; text-decoration: none;">
+            <i class="fab fa-instagram"></i>
+        </a>
+        <a href="https://youtube.com" target="_blank" style="color: white; margin: 0 10px; font-size: 22px; text-decoration: none;">
+            <i class="fab fa-youtube"></i>
+        </a>
+    </div>
+
+    <p style="margin: 10px 0; font-size: 14px;">
+        © 2025 <b>Harshvardhan Sangam</b> | All Rights Reserved
+    </p>
+</footer>
+
+<!-- Font Awesome Link -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </body>
 </html>
