@@ -1,215 +1,357 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Harshvardhan Sangam - Portfolio</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-body { margin:0; font-family:"Poppins",sans-serif; background:#0a0f1f; color:#d4e0f5; }
-a { color:#00b7ff; text-decoration:none; }
-nav { background: rgba(10,15,31,0.95); display:flex; justify-content:space-between; align-items:center; padding:1rem 2rem; position:sticky; top:0; z-index:100; border-bottom:1px solid #12223a; }
-nav h1 { font-size:1.3rem; }
-nav ul { display:flex; list-style:none; gap:1.5rem; }
-nav ul li { cursor:pointer; transition:0.3s; }
-nav ul li:hover { color:#00e0ff; }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ProResumeBuilder (Single File)</title>
 
-.hero { text-align:center; padding:5rem 2rem; background:linear-gradient(145deg,#0b132b,#1c2541);}
-.hero img { width:130px; height:130px; border-radius:50%; border:3px solid #00b7ff; margin-bottom:1rem;}
-.hero h2 { font-size:2rem; margin-bottom:0.5rem;}
-.hero p { max-width:600px; margin:0 auto 1rem;}
-button { background:#00b7ff; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; transition:0.3s;}
-button:hover { background:#00e0ff; }
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
-.sections { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:1.5rem; padding:3rem 2rem;}
-.section-card { background:#121a2f; border-radius:12px; padding:2rem; text-align:center; cursor:pointer; transition:0.3s;}
-.section-card:hover { transform:translateY(-5px); background:#18233b; }
-.section-card h3 { color:#00e0ff; }
+  <!-- html2pdf -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 
-.full-page-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:#0a0f1f; display:none; flex-direction:column; z-index:200; overflow-y:auto; animation:fadeIn 0.4s ease-in-out; }
-.full-page-overlay.active { display:flex; }
-.full-page-overlay .content { max-width:900px; margin:2rem auto; text-align:left; padding:0 1rem 3rem; }
-.full-page-overlay h2 { font-size:2rem; color:#00e0ff; margin-bottom:1rem; }
-.full-page-overlay p, .full-page-overlay ul { color:#b9c8e2; margin-bottom:1rem; }
-.full-page-overlay ul { list-style:none; padding-left:0; }
-.full-page-overlay ul li { margin:6px 0; }
-
-.return-btn { display:block; margin:2rem auto; }
-.social-links { display:flex; justify-content:center; gap:1rem; margin-bottom:2rem; flex-wrap:wrap;}
-.social-links a { font-size:1.5rem; color:#00b7ff; transition:0.3s;}
-.social-links a:hover { color:#00e0ff; }
-
-.gallery img, .certificates img { width:150px; margin:10px; border-radius:10px; border:2px solid #00b7ff; }
-
-@keyframes fadeIn { from {opacity:0; transform:scale(0.98);} to {opacity:1; transform:scale(1);} }
-
-@media (max-width:768px) {
-  .hero h2 { font-size:1.5rem; }
-  .hero p { font-size:0.9rem; }
-  .sections { grid-template-columns:1fr; padding:2rem; }
-  .section-card { padding:1.5rem; }
-  .full-page-overlay .content { padding:1rem; margin:1rem auto; }
-  .full-page-overlay h2 { font-size:1.5rem; text-align:center; }
-  .full-page-overlay p, .full-page-overlay ul { font-size:0.9rem; text-align:center; }
-  .social-links a { font-size:1.3rem; }
-  .gallery img, .certificates img { width:120px; }
-}
-
-@media (max-width:480px) {
-  nav { flex-direction: column; gap:0.5rem; padding:1rem; }
-  .hero { padding:3rem 1rem; }
-  .hero img { width:100px; height:100px; }
-  button { padding:8px 16px; font-size:0.9rem; }
-  .return-btn { padding:8px 16px; font-size:0.9rem; }
-  .gallery img, .certificates img { width:100px; }
-}
-</style>
+  <style>
+  :root{
+    --accent: #d34b4b;
+    --bg: #f6f8fb;
+    --muted: #6b7280;
+    --card: #ffffff;
+    --radius: 12px;
+    --shadow: 0 8px 28px rgba(10,20,30,0.06);
+    --maxw: 920px;
+    --gutter: 20px;
+    --content-font: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--content-font);background:var(--bg);color:#0f1724;-webkit-font-smoothing:antialiased;}
+  .app{display:flex;gap:18px;padding:18px;max-width:1200px;margin:18px auto;align-items:flex-start}
+  .sidebar{width:330px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;display:flex;flex-direction:column;gap:12px}
+  .brand h2{margin:0;font-size:18px}
+  .brand small{color:var(--muted)}
+  .steps{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+  .step-btn{display:flex;gap:10px;align-items:center;padding:10px;border-radius:8px;border:1px solid transparent;background:transparent;cursor:pointer;color:#374151;font-weight:600}
+  .step-btn i{width:18px;text-align:center}
+  .step-btn.active{background:linear-gradient(90deg,var(--accent), #f06f6f);color:#fff;border-color:rgba(0,0,0,0.04)}
+  .forms{flex:1;overflow:auto;padding-top:6px}
+  .form-panel{display:flex;flex-direction:column;gap:8px}
+  .form-panel label{display:flex;flex-direction:column;font-size:13px;color:var(--muted)}
+  .form-panel input,.form-panel textarea,.form-panel select{padding:8px;border-radius:8px;border:1px solid #e6e9ef;background:#fff;margin-top:6px}
+  .small{margin-top:8px;padding:8px;border-radius:8px;border:1px dashed #e2e8f0;background:#fff;cursor:pointer}
+  .color-presets .presets{display:flex;gap:8px;margin-top:8px}
+  .color-btn{width:34px;height:34px;border-radius:8px;border:2px solid rgba(0,0,0,0.06);cursor:pointer}
+  .export-actions{display:flex;gap:10px;align-items:center;margin-top:8px}
+  .primary{background:var(--accent);color:#fff;border:none;padding:10px;border-radius:8px;cursor:pointer}
+  .outline{background:transparent;border:1px solid #e5e7eb;padding:9px;border-radius:8px;cursor:pointer}
+  .sidebar-footer{text-align:center;font-size:12px;color:var(--muted);padding-top:8px}
+  .preview-wrap{flex:1;display:flex;justify-content:center}
+  .preview{width:var(--maxw);display:flex;gap:var(--gutter);align-items:flex-start}
+  .resume{background:var(--card);padding:20px;border-radius:12px;box-shadow:var(--shadow)}
+  .preview.two-col .left-col{width:62%}
+  .preview.two-col .right-col{width:38%}
+  .preview.single .left-col{width:100%}
+  .preview.single .right-col{display:none}
+  .left-col .top{display:flex;flex-direction:column;gap:6px}
+  .left-col h1{margin:0;font-size:26px}
+  .left-col h3{margin:0;color:var(--muted);font-weight:600}
+  .divider{height:1px;background:#e6e9ef;margin:14px 0;border-radius:2px}
+  .section{margin-top:14px}
+  .sec-title{margin:0 0 8px 0;font-size:13px;color:var(--accent);font-weight:700}
+  .section p{margin:0;color:#253043;line-height:1.45;font-size:14px}
+  .work-item{margin-bottom:12px}
+  .work-item strong{display:block;font-weight:700}
+  .work-item .meta{color:var(--muted);font-size:13px;margin-bottom:6px}
+  .work-item p{margin:0;color:#253043;font-size:14px}
+  .right-col .card{padding:12px;border-left:4px solid var(--accent);border-radius:8px;margin-bottom:12px;background:linear-gradient(180deg,#fff,#fff)}
+  .card h4{margin:0 0 8px 0;color:var(--muted);font-size:13px}
+  .card div{font-size:13px;color:#222}
+  .badge{display:inline-block;padding:5px 8px;border-radius:999px;background:#f8fafc;margin:4px 6px 0 0;font-size:12px;color:#111;border:1px solid #f1f5f9}
+  .small-note{font-size:11px;color:var(--muted);margin-top:8px;text-align:center}
+  @media (max-width:980px){
+    .app{flex-direction:column;padding:12px}
+    .sidebar{width:100%}
+    .preview{width:100%;flex-direction:column}
+    .preview .left-col,.preview .right-col{width:100%}
+    .right-col{order:2}
+  }
+  </style>
 </head>
 <body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Builder controls">
+      <div class="brand">
+        <h2>ProResumeBuilder</h2>
+        <small>Create Your Professional Resume</small>
+      </div>
 
-<nav>
-  <h1>Harshvardhan Sangam</h1>
-  <ul>
-    <li onclick="scrollToSection('main-sections')">Main Menu</li>
-  </ul>
-</nav>
+      <nav class="steps" aria-label="Builder steps">
+        <button class="step-btn active" data-step="personal"><i class="fa fa-user"></i> Personal</button>
+        <button class="step-btn" data-step="education"><i class="fa fa-graduation-cap"></i> Education</button>
+        <button class="step-btn" data-step="work"><i class="fa fa-briefcase"></i> Work</button>
+        <button class="step-btn" data-step="skills"><i class="fa fa-wrench"></i> Skills</button>
+        <button class="step-btn" data-step="projects"><i class="fa fa-folder-open"></i> Projects</button>
+        <button class="step-btn" data-step="theme"><i class="fa fa-palette"></i> Theme & Export</button>
+      </nav>
 
-<section class="hero">
-  <img src="https://via.placeholder.com/130" alt="Profile">
-  <h2>Welcome to My Portfolio</h2>
-  <p>I’m <b>Harshvardhan Sangam</b>, a BCA student passionate about technology, business, and innovation.</p>
-  <button onclick="scrollToSection('main-sections')">Explore</button>
-</section>
+      <div class="forms" role="region" aria-label="Form panels">
+        <div class="form-panel" data-panel="personal">
+          <label>Full Name <input id="fullName" placeholder="Jane Dody"></label>
+          <label>Title <input id="title" placeholder="Senior Software Engineer"></label>
+          <label>Email <input id="email" placeholder="jane@example.com"></label>
+          <label>Phone <input id="phone" placeholder="+1 (555) 123-4567"></label>
+          <label>LinkedIn / Website <input id="profileUrl" placeholder="linkedin.com/in/janedoe"></label>
+          <label>Summary <textarea id="summary" rows="4" placeholder="Short profile summary..."></textarea></label>
+        </div>
 
-<section id="main-sections" class="sections">
-  <div class="section-card" onclick="openSection('summary')"><h3>Summary</h3></div>
-  <div class="section-card" onclick="openSection('education')"><h3>Education</h3></div>
-  <div class="section-card" onclick="openSection('experience')"><h3>Experience</h3></div>
-  <div class="section-card" onclick="openSection('skills')"><h3>Skills</h3></div>
-  <div class="section-card" onclick="openSection('projects')"><h3>Projects</h3></div>
-  <div class="section-card" onclick="openSection('upcoming')"><h3>Upcoming Projects</h3></div>
-  <div class="section-card" onclick="openSection('startup')"><h3>Startup</h3></div>
-  <div class="section-card" onclick="openSection('gallery')"><h3>Gallery</h3></div>
-  <div class="section-card" onclick="openSection('certificates')"><h3>Certificates</h3></div>
-</section>
+        <div class="form-panel" data-panel="education" hidden>
+          <div id="educations"></div>
+          <button id="addEducation" class="small">+ Add Education</button>
+        </div>
 
-<!-- ===== FULL PAGE SECTIONS ===== -->
-<div id="summary" class="full-page-overlay"><div class="content" contenteditable="true">
-<h2>Profile Summary</h2>
-<p>Motivated and tech-driven BCA student aiming to contribute to organizational growth while developing new skills in business, marketing, and technology.</p>
-<button class="return-btn" onclick="closeSection()">Return to Main Menu</button>
-<div class="social-links">
-<a href="#"><i class="fab fa-linkedin"></i></a>
-<a href="#"><i class="fab fa-github"></i></a>
-<a href="#"><i class="fab fa-twitter"></i></a>
-</div></div></div>
+        <div class="form-panel" data-panel="work" hidden>
+          <div id="works"></div>
+          <button id="addWork" class="small">+ Add Work</button>
+        </div>
 
-<div id="education" class="full-page-overlay"><div class="content" contenteditable="true">
-<h2>Education</h2>
-<ul>
-<li>BCA – BRABU University (2024–2027)</li>
-<li>12th (Science) – BSEB Board, 2024</li>
-<li>10th – CBSE Board, 2022</li>
-<li>ADCA – PDTCE Pvt. Ltd, 2024</li>
-</ul>
-<button class="return-btn" onclick="closeSection()">Return to Main Menu</button>
-<div class="social-links"><a href="#"><i class="fab fa-linkedin"></i></a><a href="#"><i class="fab fa-github"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div></div></div>
+        <div class="form-panel" data-panel="skills" hidden>
+          <label>Skills (comma separated) <input id="skillsInput" placeholder="React, Node.js, SQL"></label>
+          <div id="certs"></div>
+          <button id="addCert" class="small">+ Add Certification</button>
+        </div>
 
-<div id="experience" class="full-page-overlay"><div class="content" contenteditable="true">
-<h2>Experience</h2>
-<p>Fresher – Currently developing practical skills through academic projects and independent learning.</p>
-<button class="return-btn" onclick="closeSection()">Return to Main Menu</button>
-<div class="social-links"><a href="#"><i class="fab fa-linkedin"></i></a><a href="#"><i class="fab fa-github"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div></div></div>
+        <div class="form-panel" data-panel="projects" hidden>
+          <div id="projectsList"></div>
+          <button id="addProject" class="small">+ Add Project</button>
+        </div>
 
-<div id="skills" class="full-page-overlay"><div class="content" contenteditable="true">
-<h2>Skills</h2>
-<ul>
-<li>MS Office Suite</li>
-<li>Spreadsheets & Presentations</li>
-<li>Artificial Intelligence (Basics)</li>
-<li>Marketing & Sales Management</li>
-<li>Technology Research & Adaptation</li>
-</ul>
-<button class="return-btn" onclick="closeSection()">Return to Main Menu</button>
-<div class="social-links"><a href="#"><i class="fab fa-linkedin"></i></a><a href="#"><i class="fab fa-github"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div></div></div>
+        <div class="form-panel" data-panel="theme" hidden>
+          <label>Template
+            <select id="templateSelect">
+              <option value="two">Two-column (default)</option>
+              <option value="single">Single-column</option>
+            </select>
+          </label>
 
-<div id="projects" class="full-page-overlay"><div class="content" contenteditable="true">
-<h2>Projects</h2>
-<p>• Personal Resume Website (HTML, CSS, JS)<br>• AI Tools Research Blog<br>• Student Community Platform – “College to CEO”</p>
-<button class="return-btn" onclick="closeSection()">Return to Main Menu</button>
-<div class="social-links"><a href="#"><i class="fab fa-linkedin"></i></a><a href="#"><i class="fab fa-github"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div></div></div>
+          <div class="color-presets">
+            <label>Accent Color Presets</label>
+            <div class="presets">
+              <button class="color-btn" data-color="#d34b4b" style="background:#d34b4b"></button>
+              <button class="color-btn" data-color="#2b6cb0" style="background:#2b6cb0"></button>
+              <button class="color-btn" data-color="#16a34a" style="background:#16a34a"></button>
+            </div>
+          </div>
 
-<div id="upcoming" class="full-page-overlay"><div class="content" contenteditable="true">
-<h2>Upcoming Projects</h2>
-<p>Working on launching new educational tech-based tools and community-driven projects to help students learn and grow faster.</p>
-<button class="return-btn" onclick="closeSection()">Return to Main Menu</button>
-<div class="social-links"><a href="#"><i class="fab fa-linkedin"></i></a><a href="#"><i class="fab fa-github"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div></div></div>
+          <label>Custom Accent HEX <input id="customHex" placeholder="#d34b4b"></label>
 
-<div id="startup" class="full-page-overlay"><div class="content" contenteditable="true">
-<h2>Startup</h2>
-<p>Founder of an early-stage student tech community “College to CEO” focusing on mentoring, projects, and startup learning paths for students.</p>
-<button class="return-btn" onclick="closeSection()">Return to Main Menu</button>
-<div class="social-links"><a href="#"><i class="fab fa-linkedin"></i></a><a href="#"><i class="fab fa-github"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div></div></div>
+          <div class="export-actions" style="margin-top:12px">
+            <button id="pdfBtn" class="primary"><i class="fa fa-file-pdf"></i> Export as PDF</button>
+            <button id="clearBtn" class="outline">Clear Data</button>
+          </div>
+        </div>
+      </div>
 
-<div id="gallery" class="full-page-overlay"><div class="content" contenteditable="true">
-<h2>Gallery</h2>
-<img src="https://via.placeholder.com/150" alt="Gallery 1">
-<img src="https://via.placeholder.com/150" alt="Gallery 2">
-<button class="return-btn" onclick="closeSection()">Return to Main Menu</button>
-<div class="social-links"><a href="#"><i class="fab fa-linkedin"></i></a><a href="#"><i class="fab fa-github"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div></div></div>
+      <footer class="sidebar-footer">Auto-saves to browser storage</footer>
+    </aside>
 
-<div id="certificates" class="full-page-overlay"><div class="content" contenteditable="true">
-<h2>Certificates</h2>
-<img src="https://via.placeholder.com/150" alt="Certificate 1">
-<img src="https://via.placeholder.com/150" alt="Certificate 2">
-<button class="return-btn" onclick="closeSection()">Return to Main Menu</button>
-<div class="social-links"><a href="#"><i class="fab fa-linkedin"></i></a><a href="#"><i class="fab fa-github"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div></div></div>
+    <main class="preview-wrap">
+      <section id="preview" class="preview two-col" aria-label="Live resume preview">
+        <div class="resume left-col" id="resumeCard">
+          <div class="top">
+            <h1 id="rvName">Jane Dody</h1>
+            <h3 id="rvTitle">Senior Software Engineer</h3>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="section">
+            <h4 class="sec-title">Profile Summary</h4>
+            <p id="rvSummary">Highly motivated and results-oriented professional with experience in full-stack development...</p>
+          </div>
+
+          <div class="section" id="rvWorkSection">
+            <h4 class="sec-title">Work Experience</h4>
+            <div id="rvWork"></div>
+          </div>
+
+          <div class="section" id="rvProjectsSection">
+            <h4 class="sec-title">Projects</h4>
+            <div id="rvProjects"></div>
+          </div>
+        </div>
+
+        <aside class="resume right-col" aria-hidden="false">
+          <div class="card contact">
+            <h4>Contact</h4>
+            <div id="rvContact"></div>
+          </div>
+
+          <div class="card education">
+            <h4>Education</h4>
+            <div id="rvEducation"></div>
+          </div>
+
+          <div class="card skills">
+            <h4>Skills</h4>
+            <div id="rvSkills"></div>
+          </div>
+
+          <div class="card certs">
+            <h4>Certifications</h4>
+            <div id="rvCerts"></div>
+          </div>
+
+          <div class="small-note">Generated with ProResumeBuilder</div>
+        </aside>
+      </section>
+    </main>
+  </div>
 
 <script>
-function openSection(id){
-  document.querySelectorAll('.full-page-overlay').forEach(el=>el.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.getElementById(id).scrollTop = 0;
-}
-function closeSection(){
-  document.querySelectorAll('.full-page-overlay').forEach(el=>el.classList.remove('active'));
-}
-function scrollToSection(id){
-  document.getElementById(id)?.scrollIntoView({behavior:"smooth"});
-}
+(() => {
+  const $ = (s,ctx=document)=>ctx.querySelector(s);
+  const $$ = (s,ctx=document)=>Array.from(ctx.querySelectorAll(s));
+
+  const steps = $$('.step-btn'), panels = $$('.form-panel');
+  const preview = $('#preview'), templateSelect = $('#templateSelect'), customHex = $('#customHex'), colorButtons = $$('.color-btn');
+  const pdfBtn = $('#pdfBtn'), clearBtn = $('#clearBtn');
+
+  const inputs = {
+    fullName: $('#fullName'),
+    title: $('#title'),
+    email: $('#email'),
+    phone: $('#phone'),
+    profileUrl: $('#profileUrl'),
+    summary: $('#summary'),
+    skillsInput: $('#skillsInput')
+  };
+
+  const educationsContainer = $('#educations'), worksContainer = $('#works'), certsContainer = $('#certs'), projectsContainer = $('#projectsList');
+
+  const rvName = $('#rvName'), rvTitle = $('#rvTitle'), rvSummary = $('#rvSummary'), rvContact = $('#rvContact');
+  const rvEducation = $('#rvEducation'), rvSkills = $('#rvSkills'), rvCerts = $('#rvCerts'), rvWork = $('#rvWork'), rvProjects = $('#rvProjects');
+
+  $('#addEducation').addEventListener('click', ()=>addEducation());
+  $('#addWork').addEventListener('click', ()=>addWork());
+  $('#addProject').addEventListener('click', ()=>addProject());
+  $('#addCert').addEventListener('click', ()=>addCert());
+
+  steps.forEach(btn=>{
+    btn.addEventListener('click', ()=> {
+      steps.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const step = btn.dataset.step;
+      panels.forEach(p=>p.hidden = p.dataset.panel !== step);
+    });
+  });
+
+  templateSelect.addEventListener('change', ()=>{
+    const v = templateSelect.value;
+    preview.classList.toggle('single', v === 'single');
+    preview.classList.toggle('two-col', v === 'two');
+    save();
+  });
+
+  colorButtons.forEach(b=>b.addEventListener('click', ()=>{ document.documentElement.style.setProperty('--accent', b.dataset.color); save(); }));
+
+  customHex.addEventListener('change', ()=>{ const v = customHex.value.trim(); if(/^#?[0-9a-fA-F]{6}$/.test(v)){ const c = v.startsWith('#')?v:'#'+v; document.documentElement.style.setProperty('--accent', c); save(); } else alert('Enter valid HEX'); });
+
+  function createBlock(html){ const d=document.createElement('div'); d.className='block'; d.innerHTML=html; return d; }
+
+  function addEducation(data={}){ const block=createBlock(`<label>Institution <input data-field="institute"></label><label>Degree & Years <input data-field="degree"></label><label>GPA <input data-field="gpa"></label><div style="display:flex;gap:8px;margin-top:8px"><button class="small save">Save</button><button class="small remove" style="border-color:#fed7d7">Remove</button></div>`); fill(block,data); educationsContainer.appendChild(block); bindBlock(block); }
+  function addWork(data={}){ const block=createBlock(`<label>Company <input data-field="company"></label><label>Title & Dates <input data-field="title"></label><label>Description <textarea data-field="desc" rows="3"></textarea></label><div style="display:flex;gap:8px;margin-top:8px"><button class="small save">Save</button><button class="small remove" style="border-color:#fed7d7">Remove</button></div>`); fill(block,data); worksContainer.appendChild(block); bindBlock(block); }
+  function addProject(data={}){ const block=createBlock(`<label>Project Name <input data-field="name"></label><label>Link <input data-field="link"></input></label><label>Description <textarea data-field="desc" rows="3"></textarea></label><div style="display:flex;gap:8px;margin-top:8px"><button class="small save">Save</button><button class="small remove" style="border-color:#fed7d7">Remove</button></div>`); fill(block,data); projectsContainer.appendChild(block); bindBlock(block); }
+  function addCert(data={}){ const block=createBlock(`<label>Certification <input data-field="title"></label><div style="display:flex;gap:8px;margin-top:8px"><button class="small save">Save</button><button class="small remove" style="border-color:#fed7d7">Remove</button></div>`); fill(block,data); certsContainer.appendChild(block); bindBlock(block); }
+
+  function fill(block,data){ $$('.block [data-field]', block).forEach(el=>{ const key=el.dataset.field; if(data && data[key]) el.value=data[key]; }); }
+  function bindBlock(block){ const save = $('.save', block), remove = $('.remove', block); save.addEventListener('click', ()=>{ render(); saveDataSoon(); }); remove.addEventListener('click', ()=>{ block.remove(); render(); saveDataSoon(); }); }
+
+  function render(){
+    rvName.textContent = inputs.fullName.value || 'Jane Dody';
+    rvTitle.textContent = inputs.title.value || 'Senior Software Engineer';
+    rvSummary.textContent = inputs.summary.value || 'Highly motivated and results-oriented professional...';
+    rvContact.innerHTML = `${inputs.email.value?`<div><i class="fa fa-envelope"></i> ${inputs.email.value}</div>`:''}${inputs.phone.value?`<div><i class="fa fa-phone"></i> ${inputs.phone.value}</div>`:''}${inputs.profileUrl.value?`<div><i class="fa fa-link"></i> ${inputs.profileUrl.value}</div>`:''}`;
+    rvEducation.innerHTML=''; $$('.block', educationsContainer).forEach(b=>{ const inst=$('[data-field="institute"]',b).value; const degree=$('[data-field="degree"]',b).value; const gpa=$('[data-field="gpa"]',b).value; if(inst||degree){ const el=document.createElement('div'); el.innerHTML=`<strong>${inst}</strong><div style="color:var(--muted);font-size:13px">${degree}${gpa?(' • GPA: '+gpa):''}</div>`; rvEducation.appendChild(el); }});
+    rvSkills.innerHTML=''; const skills = inputs.skillsInput.value ? inputs.skillsInput.value.split(',').map(s=>s.trim()).filter(Boolean):[]; skills.forEach(s=>rvSkills.insertAdjacentHTML('beforeend', `<span class="badge">${s}</span>`));
+    rvCerts.innerHTML=''; $$('.block', certsContainer).forEach(b=>{ const t=$('[data-field="title"]',b).value; if(t) rvCerts.insertAdjacentHTML('beforeend', `<div>${t}</div>`);});
+    rvWork.innerHTML=''; $$('.block', worksContainer).forEach(b=>{ const company=$('[data-field="company"]',b).value; const title=$('[data-field="title"]',b).value; const desc=$('[data-field="desc"]',b).value; if(company||title){ const el=document.createElement('div'); el.className='work-item'; el.innerHTML=`<strong>${title}</strong><div class="meta">${company}</div><p>${desc}</p>`; rvWork.appendChild(el); }});
+    rvProjects.innerHTML=''; $$('.block', projectsContainer).forEach(b=>{ const name=$('[data-field="name"]',b).value; const link=$('[data-field="link"]',b).value; const desc=$('[data-field="desc"]',b).value; if(name){ const el=document.createElement('div'); el.innerHTML=`<strong>${name}</strong>${link?` <div class="meta" style="margin-top:4px">${link}</div>`:''}<p style="margin-top:6px">${desc}</p>`; rvProjects.appendChild(el); }});
+    save();
+  }
+
+  function exportPDF(){
+    const el = document.getElementById('preview');
+    const resumes = document.querySelectorAll('.resume');
+    resumes.forEach(r=>{ r.style.boxShadow='none'; r.style.background='#fff'; });
+    const opt = {
+      margin: 0.25,
+      filename: (inputs.fullName.value || 'resume') + '.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['css','legacy'] }
+    };
+    html2pdf().set(opt).from(el).save().finally(()=>{ resumes.forEach(r=>{ r.style.boxShadow=''; r.style.background=''; }); });
+  }
+
+  function save(){
+    const data = {
+      personal:{
+        fullName: inputs.fullName.value, title: inputs.title.value, email: inputs.email.value,
+        phone: inputs.phone.value, profileUrl: inputs.profileUrl.value, summary: inputs.summary.value, skills: inputs.skillsInput ? inputs.skillsInput.value : ''
+      },
+      template: templateSelect.value,
+      color: getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(),
+      educations: $$('.block', educationsContainer).map(b=>({ institute:$('[data-field="institute"]',b).value, degree:$('[data-field="degree"]',b).value, gpa:$('[data-field="gpa"]',b).value })),
+      works: $$('.block', worksContainer).map(b=>({ company:$('[data-field="company"]',b).value, title:$('[data-field="title"]',b).value, desc:$('[data-field="desc"]',b).value })),
+      projects: $$('.block', projectsContainer).map(b=>({ name:$('[data-field="name"]',b).value, link:$('[data-field="link"]',b).value, desc:$('[data-field="desc"]',b).value })),
+      certs: $$('.block', certsContainer).map(b=>({ title:$('[data-field="title"]',b).value }))
+    };
+    localStorage.setItem('proresume:data', JSON.stringify(data));
+  }
+  function load(){ try{ const raw = localStorage.getItem('proresume:data'); if(!raw) return null; return JSON.parse(raw); }catch(e){return null;} }
+  function saveDataSoon(){ setTimeout(save,250); }
+
+  function renderFromData(d){
+    if(!d) return;
+    if(d.personal){ inputs.fullName.value = d.personal.fullName || ''; inputs.title.value = d.personal.title || ''; inputs.email.value = d.personal.email || ''; inputs.phone.value = d.personal.phone || ''; inputs.profileUrl.value = d.personal.profileUrl || ''; inputs.summary.value = d.personal.summary || ''; inputs.skillsInput ? inputs.skillsInput.value = d.personal.skills || '' : null; }
+    if(d.template) templateSelect.value = d.template;
+    if(d.color) document.documentElement.style.setProperty('--accent', d.color);
+    educationsContainer.innerHTML=''; worksContainer.innerHTML=''; projectsContainer.innerHTML=''; certsContainer.innerHTML='';
+    (d.educations||[]).forEach(e=>addEducation(e)); (d.works||[]).forEach(w=>addWork(w)); (d.projects||[]).forEach(p=>addProject(p)); (d.certs||[]).forEach(c=>addCert(c));
+    render();
+  }
+
+  function clearAll(){ if(!confirm('Clear saved resume data?')) return; localStorage.removeItem('proresume:data'); location.reload(); }
+
+  pdfBtn.addEventListener('click', exportPDF);
+  clearBtn.addEventListener('click', clearAll);
+
+  Object.values(inputs).forEach(inp=>{ if(inp) inp.addEventListener('input', ()=>{ render(); saveDataSoon(); }); });
+
+  function ensureInitial(){
+    const data = load();
+    if(!data){
+      inputs.fullName.value = 'Jane Dody';
+      inputs.title.value = 'Senior Software Engineer';
+      inputs.summary.value = 'Highly motivated and results-oriented professional with 8+ years of experience in full-stack development.';
+      inputs.email.value = 'jane.doe@example.com';
+      inputs.phone.value = '(555) 123-4567';
+      inputs.profileUrl.value = 'linkedin.com/in/janedoe';
+      if(inputs.skillsInput) inputs.skillsInput.value = 'React, Node.js, TypeScript, AWS';
+      addEducation({institute:'State University', degree:'M.S. Computer Science • 2016 - 2018', gpa:'3.9/4.0'});
+      addEducation({institute:'Local College', degree:'B.S. Software Engineering • 2012 - 2016', gpa:''});
+      addWork({company:'Tech Innovators Inc.', title:'Senior Software Engineer • 2020 - Present', desc:'Led development of a real-time analytics dashboard.'});
+      addWork({company:'Web Solutions Co.', title:'Software Developer • 2018 - 2020', desc:'Built multiple customer-facing web apps.'});
+      addProject({name:'ProResumeBuilder', link:'github.com/proresume/builder', desc:'Resume builder with live preview and export.'});
+      addCert({title:'AWS Certified Solutions Architect'});
+      save(); render();
+    } else renderFromData(data);
+  }
+
+  window.clearResumeData = clearAll;
+  ensureInitial(); render();
+
+})();
 </script>
-<footer style="
-    background-color: #111;
-    color: white;
-    text-align: center;
-    padding: 30px 10px;
-    font-family: 'Poppins', sans-serif;
-">
-    <div style="margin-bottom: 15px;">
-        <!-- Social Media Links -->
-        <a href="https://facebook.com" target="_blank" style="color: white; margin: 0 10px; font-size: 22px; text-decoration: none;">
-            <i class="fab fa-facebook-f"></i>
-        </a>
-        <a href="https://twitter.com" target="_blank" style="color: white; margin: 0 10px; font-size: 22px; text-decoration: none;">
-            <i class="fab fa-twitter"></i>
-        </a>
-        <a href="https://linkedin.com" target="_blank" style="color: white; margin: 0 10px; font-size: 22px; text-decoration: none;">
-            <i class="fab fa-linkedin-in"></i>
-        </a>
-        <a href="https://instagram.com" target="_blank" style="color: white; margin: 0 10px; font-size: 22px; text-decoration: none;">
-            <i class="fab fa-instagram"></i>
-        </a>
-        <a href="https://youtube.com" target="_blank" style="color: white; margin: 0 10px; font-size: 22px; text-decoration: none;">
-            <i class="fab fa-youtube"></i>
-        </a>
-    </div>
-
-    <p style="margin: 10px 0; font-size: 14px;">
-        © 2025 <b>Harshvardhan Sangam</b> | All Rights Reserved
-    </p>
-</footer>
-
-<!-- Font Awesome Link -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </body>
 </html>
